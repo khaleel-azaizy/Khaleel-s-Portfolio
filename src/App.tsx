@@ -16,7 +16,7 @@ type StageProps = {
   z: number
   flow?: boolean
 }
-
+let skillscroll = false;
 /* Stage:
  *  - default: sticky — pins to top while the next stage rises and covers it.
  *  - flow:    relative — keeps z-stacking so it still rises over the previous
@@ -35,6 +35,9 @@ function Stage({ children, dark = false, z, flow = false }: StageProps) {
 export default function App() {
   useSmoothScroll()
 
+  if(window.screen.width < 768) {
+    skillscroll = true;
+   }
   return (
     <div className="relative min-h-screen bg-paper text-ink">
       <Intro />
@@ -45,7 +48,7 @@ export default function App() {
         <Stage z={10}><Hero /></Stage>
         <Stage z={20} dark><About /></Stage>
         <Stage z={30} flow><Projects /></Stage>
-        <Stage z={40} dark ><Skills /></Stage>
+        <Stage z={40} dark flow={skillscroll} ><Skills /></Stage>
         <Stage z={50} ><Education /></Stage>
         <Stage z={60} dark><Contact /></Stage>
       </main>
