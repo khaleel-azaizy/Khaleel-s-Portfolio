@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────── base ───────────────────────── */
+:root {
+  /* RGB triplets — consumed by tailwind via rgb(var(--c-x) / <alpha>) */
+  --c-paper: 235 229 216;
+  --c-paper-2: 226 218 201;
+  --c-paper-3: 214 205 185;
+  --c-ink: 21 17 13;
+  --c-ink-2: 58 52 44;
+  --c-ink-3: 107 99 83;
+  --c-ember: 221 68 35;
+  --c-ember-deep: 184 52 26;
+  --c-moss: 92 102 72;
+
+  /* string aliases for raw CSS usage */
+  --paper: rgb(var(--c-paper));
+  --paper-2: rgb(var(--c-paper-2));
+  --paper-3: rgb(var(--c-paper-3));
+  --ink: rgb(var(--c-ink));
+  --ink-2: rgb(var(--c-ink-2));
+  --ink-3: rgb(var(--c-ink-3));
+  --ember: rgb(var(--c-ember));
+  --moss: rgb(var(--c-moss));
+}
+
+/* dark theme — swaps paper/ink so any tailwind utility on these tokens
+   (text-ink, bg-paper, border-ink/20, …) automatically inverts.   */
+.theme-dark {
+  --c-paper: 18 16 14;       /* near-black "paper" */
+  --c-paper-2: 30 26 22;
+  --c-paper-3: 44 38 32;
+  --c-ink: 240 234 222;       /* cream "ink" reads as light on dark */
+  --c-ink-2: 196 186 168;
+  --c-ink-3: 138 130 112;
+
+  --paper: rgb(var(--c-paper));
+  --paper-2: rgb(var(--c-paper-2));
+  --paper-3: rgb(var(--c-paper-3));
+  --ink: rgb(var(--c-ink));
+  --ink-2: rgb(var(--c-ink-2));
+  --ink-3: rgb(var(--c-ink-3));
+}
+
+html, body { background: var(--paper); color: var(--ink); }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'ss01', 'ss03', 'cv11';
+  overflow-x: hidden;
+}
+
+/* hide native scrollbar (Lenis handles scrolling) */
+html { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+::selection {
+  background: var(--ember);
+  color: var(--paper);
+}
+
+/* paper grain — kept above stacked sections so the texture sits on every panel */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* edge vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.18) 100%);
+}
+
+/* ───────────── stacked-section reveal ─────────────
+   `.stack-section` pins to top while the next stage rises over it.
+   `.stack-flow` keeps z-index stacking (so it rises over the
+   previous sticky section) but allows tall content to scroll. */
+.stack-section,
+.stack-flow {
+  width: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  isolation: isolate;
+}
+.stack-section {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+}
+.stack-flow {
+  position: relative;
+}
+
+/* ───────────────────── typography utilities ───────────────────── */
+.font-display {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-feature-settings: 'ss01', 'ss03';
+  font-variation-settings: 'SOFT' 50, 'WONK' 0;
+}
+
+.font-display.swash {
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.display-italic {
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ───────────────────── motion primitives ───────────────────── */
+.reveal-line { display: block; overflow: hidden; }
+.reveal-line > span { display: inline-block; will-change: transform; }
+
+@keyframes ember-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(221,68,35,0.45); }
+  50%      { box-shadow: 0 0 0 8px rgba(221,68,35,0); }
+}
+.pulse-dot {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--ember);
+  animation: ember-pulse 2.4s ease-out infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track { animation: marquee 38s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+@media (max-width: 768px) {
+  .marquee-track { animation-duration: 18s; }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.drift { animation: drift 4s ease-in-out infinite; }
+
+@keyframes slow-spin {
+  to { transform: rotate(360deg); }
+}
+.spin-slow { animation: slow-spin 24s linear infinite; transform-origin: center; }
+
+/* ───────────────────── ambient hover ring ───────────────────── */
+.cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  width: 40px; height: 40px;
+  border: 1px solid var(--ember);
+  border-radius: 999px;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.cursor-ring.is-active {
+  opacity: 0.9;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* hairline divider */
+.hair {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--ink-3) 12%, var(--ink-3) 88%, transparent);
+  opacity: 0.45;
+}
+
+/* link underline reveal */
+.link-arc {
+  position: relative;
+  display: inline-block;
+}
+.link-arc::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-arc:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* project row */
+.project-row { transition: background 0.55s cubic-bezier(0.16,1,0.3,1); }
+.project-row:hover { background: rgb(var(--c-ink) / 0.04); }
+.project-row .title { transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), color 0.4s ease; }
+.project-row:hover .title { transform: translateX(12px); }
+.project-row .arrow {
+  transition: transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+  opacity: 0.55;
+}
+.project-row:hover .arrow { opacity: 1; transform: translateX(4px); }
+
+/* big number outlined */
+.num-outline {
+  -webkit-text-stroke: 1px var(--ink-3);
+  color: transparent;
+  font-family: 'Fraunces', serif;
+}
+
+/* interactive cursor cues */
+a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
