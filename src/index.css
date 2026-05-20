@@ -44,7 +44,13 @@
   --ink-3: rgb(var(--c-ink-3));
 }
 
-html, body { background: var(--paper); color: var(--ink); }
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 
 html {
   -webkit-font-smoothing: antialiased;
@@ -54,9 +60,17 @@ html {
 }
 
 body {
+  overflow-x: clip;
+}
+
+#root {
+  width: 100%;
+  overflow-x: clip;
+}
+
+body {
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
   font-feature-settings: 'ss01', 'ss03', 'cv11';
-  overflow-x: hidden;
 }
 
 /* hide native scrollbar (Lenis handles scrolling) */

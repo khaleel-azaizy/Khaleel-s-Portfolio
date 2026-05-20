@@ -45,7 +45,12 @@ export function Skills() {
         {groups.map((g, gi) => {
           const items = skills.filter((s) => s.category === g.id)
           return (
-            <div key={g.id} className="grid grid-cols-12 gap-6 border-t border-ink/15 pt-8">
+            <motion.div key={g.id} 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: 0.5, delay: gi * 0.025, ease: [0.16, 1, 0.3, 1] }}
+            className="grid grid-cols-12 gap-6 border-t border-ink/15 pt-8">
               <div className="col-span-12 md:col-span-3 space-y-2">
                 <div className="mono text-[11px] text-ink-3">
                   0{gi + 1} · {String(items.length).padStart(2, '0')}
@@ -55,20 +60,17 @@ export function Skills() {
               </div>
               <ul className="col-span-12 md:col-span-9 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3">
                 {items.map((s, i) => (
-                  <motion.li
+                  
+                  <div
                     key={s.name}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-10%' }}
-                    transition={{ duration: 0.5, delay: i * 0.025, ease: [0.16, 1, 0.3, 1] }}
                     className="group flex items-center gap-3 py-2 border-b border-ink/10 hover:border-ember/60 transition-colors"
                   >
                     <s.icon className="w-5 h-5 text-ink-3 group-hover:text-ember transition-colors" />
                     <span className="font-display text-xl tracking-snug">{s.name}</span>
-                  </motion.li>
+                  </div>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           )
         })}
       </div>
