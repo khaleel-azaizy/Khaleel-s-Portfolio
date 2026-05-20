@@ -6,3 +6,4 @@ dist
 .env
 .env.local
 .firebase
+src/firebase.ts
