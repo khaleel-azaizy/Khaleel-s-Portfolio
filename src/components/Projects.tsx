@@ -24,8 +24,7 @@ export function Projects() {
       {/* header strip */}
       <div className="px-6 md:px-10 pt-16 md:pt-20">
         <div className="flex items-center justify-between eyebrow text-ink-3">
-          <span>(02) — Projects · {String(projects.length).padStart(2, '0')} entries</span>
-          <span className="mono hidden md:inline">↳ Hover a row for preview</span>
+          <span>(02) — Projects</span>
         </div>
       </div>
 
@@ -115,9 +114,9 @@ export function Projects() {
         ))}
       </ul>
 
-      <div className="px-6 md:px-10 mt-12 mb-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="px-6 md:px-10 mt-12 mb-0">
         <p className="font-display text-2xl md:text-3xl tracking-snug max-w-xl">
-          More work, lab notes & coursework live on
+          More on
           <a
             href="https://github.com/khaleel-azaizy"
             target="_blank"
@@ -127,7 +126,6 @@ export function Projects() {
             GitHub →
           </a>
         </p>
-        <span className="mono text-[11px] text-ink-3">END · 02</span>
       </div>
     </section>
   )

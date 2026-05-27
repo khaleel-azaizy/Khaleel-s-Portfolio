@@ -17,29 +17,13 @@ export function About() {
         <div className="md:col-span-8">
           <FadeIn>
             <p className="font-display text-[clamp(28px,3.6vw,52px)] leading-[1.12] tracking-snug font-light">
-              I’m a software engineer with a deep interest in
-              <span className="display-italic text-ember"> well-made </span>
-              interfaces and the
+              Software engineer building
+              <span className="display-italic text-ember"> full-stack </span>
+              products end-to-end, with
               <span className="display-italic"> data </span>
-              that lives behind them. I build full-stack products end-to-end —
-              from schema and infrastructure to the last detail of motion on screen —
-              and I integrate
+              and
               <span className="display-italic text-ember"> AI </span>
               where it earns its place.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.2} className="mt-10 grid md:grid-cols-2 gap-x-10 gap-y-4 text-ink-2 max-w-3xl">
-            <p>
-              My recent work spans rental platforms, e-commerce, social apps with
-              interactive mapping, neural-network classifiers and NLP pipelines on
-              transformer models. I move fluently between React, Angular and Python —
-              and I care about shipping.
-            </p>
-            <p>
-              I treat performance, accessibility and design as the same job.
-              I write code that other people can read, and I build interfaces that
-              feel inevitable, not decorated.
             </p>
           </FadeIn>
         </div>

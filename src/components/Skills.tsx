@@ -4,9 +4,9 @@ import { Marquee } from './Marquee'
 import { FadeIn } from './RevealText'
 
 const groups = [
-  { id: 'frontend', label: 'Frontend', hint: 'Interfaces & motion' },
-  { id: 'backend',  label: 'Backend',  hint: 'APIs, services, data' },
-  { id: 'tools',    label: 'Toolkit',  hint: 'Workflow & systems' },
+  { id: 'frontend', label: 'Frontend' },
+  { id: 'backend',  label: 'Backend' },
+  { id: 'tools',    label: 'Toolkit' },
 ] as const
 
 export function Skills() {
@@ -26,7 +26,7 @@ export function Skills() {
         ))}
       </Marquee>
 
-      <div className="px-6 md:px-10 pt-20 md:pt-28">
+      <div className="px-6 md:px-10 pt-20 ">
         <div className="flex items-center justify-between eyebrow text-ink-3">
           <span>(03) — Stack</span>
           <span className="mono">{skills.length} entries</span>
@@ -56,7 +56,6 @@ export function Skills() {
                   0{gi + 1} · {String(items.length).padStart(2, '0')}
                 </div>
                 <h3 className="font-display text-3xl md:text-4xl tracking-snug">{g.label}</h3>
-                <p className="text-ink-3 text-sm">{g.hint}</p>
               </div>
               <ul className="col-span-12 md:col-span-9 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3">
                 {items.map((s, i) => (

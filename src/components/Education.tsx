@@ -7,7 +7,6 @@ export function Education() {
       <div className="px-6 md:px-10 pt-20 md:pt-28 ">
         <div className="flex items-center justify-between eyebrow text-ink-3">
           <span>(04) — Studies</span>
-          <span className="mono hidden md:inline">↳ Academic foundation</span>
         </div>
         <div className="hair my-6" />
       </div>

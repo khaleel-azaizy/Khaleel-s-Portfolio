@@ -174,7 +174,7 @@ export const skills: Skill[] = [
 export const education = [
   {
     degree: 'B.Sc. Software Engineering',
-    school: 'Engineering Studies',
+    school: 'Kinneret Academic College',
     period: '2021 — 2025',
     notes: 'Full-stack development, data analytics, machine learning, NLP, and networks.',
   },
@@ -185,6 +185,7 @@ export const profile = {
   role: 'Software Engineer',
   location: 'Israel',
   email: 'khaleelazaizy@gmail.com',
+  phone: '054-658-5424',
   github: 'https://github.com/khaleel-azaizy',
   linkedIn: 'https://linkedin.com/in/khaleel-azaizy',
   pitch:

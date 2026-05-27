@@ -1,30 +1,86 @@
 import { useEffect, useState } from 'react'
 import { sections } from '../data/info'
 import { Clock } from './Clock'
-import { profile } from '../data/info'
+import { getLenis } from '../hooks/useSmoothScroll'
 
-export function Navigation() {
+function scrollToSection(id: string) {
+  const target = document.getElementById(id)
+  if (!target) return
+
+  const stages = Array.from(
+    document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow')
+  )
+  const idx = stages.findIndex((s) => s.contains(target))
+  if (idx < 0) return
+
+  // Sum the rendered heights of every preceding Stage. offsetHeight is
+  // independent of sticky pinning, so this stays correct even when earlier
+  // sections are currently pinned at top:0.
+  let top = 0
+  for (let i = 0; i < idx; i++) top += stages[i].offsetHeight
+
+  // Add the offset of the Stages' parent container (the <main> element).
+  const container = stages[0]?.parentElement
+  if (container) {
+    top += container.getBoundingClientRect().top + window.scrollY
+  }
+
+  const lenis = getLenis()
+  if (lenis) {
+    lenis.scrollTo(top, {
+      duration: 1.2,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      lock: true,
+      force: true,
+      immediate: false,
+    })
+  } else {
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+}
+
+type NavigationProps = {
+  onContactClick: () => void
+}
+
+export function Navigation({ onContactClick }: NavigationProps) {
   const [active, setActive] = useState<string>('home')
   const [onDark, setOnDark] = useState<boolean>(false)
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            setActive(e.target.id)
-            const stage = (e.target as HTMLElement).closest('.stack-section')
-            setOnDark(!!stage?.classList.contains('theme-dark'))
-          }
-        })
-      },
-      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
-    )
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id)
-      if (el) obs.observe(el)
-    })
-    return () => obs.disconnect()
+    const compute = () => {
+      const stages = Array.from(
+        document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow')
+      )
+      if (!stages.length) return
+      const container = stages[0].parentElement
+      if (!container) return
+
+      const containerY = container.getBoundingClientRect().top + window.scrollY
+      const trigger = window.scrollY + window.innerHeight * 0.4
+
+      let activeIdx = 0
+      let runY = containerY
+      for (let i = 0; i < stages.length; i++) {
+        if (runY <= trigger) activeIdx = i
+        runY += stages[i].offsetHeight
+      }
+
+      const stage = stages[activeIdx]
+      const sectionEl = stage.querySelector<HTMLElement>('section[id]')
+      if (sectionEl) {
+        setActive(sectionEl.id)
+        setOnDark(stage.classList.contains('theme-dark'))
+      }
+    }
+
+    compute()
+    window.addEventListener('scroll', compute, { passive: true })
+    window.addEventListener('resize', compute)
+    return () => {
+      window.removeEventListener('scroll', compute)
+      window.removeEventListener('resize', compute)
+    }
   }, [])
 
   // colors that survive both light + dark stages
@@ -38,10 +94,23 @@ export function Navigation() {
       <header className={`fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-5 flex items-center justify-between pointer-events-none transition-colors duration-500 ${navText}`}>
         <div className="pointer-events-auto flex items-center gap-3">
           <span className="pulse-dot" aria-hidden />
-          <span className="eyebrow" style={{ color: 'inherit' }}>{profile.available ? 'Available — Q3 2026' : 'Booked'}</span>
+          <button
+            onClick={onContactClick}
+            className="eyebrow tracking-wider inline-flex items-center gap-2 border-b border-current/40 hover:border-ember hover:text-ember transition-colors pb-0.5"
+            style={{ color: 'inherit' }}
+            data-cursor="hover"
+          >
+            Contact me
+            <span className="text-ember">↗</span>
+          </button>
         </div>
-        <a href="#home" className={`pointer-events-auto eyebrow tracking-wider transition-colors ${navAccent}`} style={{ color: 'inherit' }}>
-          KH. AZAIZY <span className={navDim}>/ PORTFOLIO ’26</span>
+        <a
+          href="#home"
+          onClick={(e) => { e.preventDefault(); scrollToSection('home') }}
+          className={`pointer-events-auto eyebrow tracking-wider transition-colors ${navAccent}`}
+          style={{ color: 'inherit' }}
+        >
+          KHALEEL. AZAIZY 
         </a>
         <div className="pointer-events-auto eyebrow text-right hidden md:block" style={{ color: 'inherit' }}>
           <Clock /> <span className={navDim}>UTC+3</span>
@@ -59,6 +128,7 @@ export function Navigation() {
             <a
               key={s.id}
               href={`#${s.id}`}
+              onClick={(e) => { e.preventDefault(); scrollToSection(s.id) }}
               className="group flex items-center justify-end gap-3 eyebrow"
               style={{ color: 'inherit' }}
             >

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 import { Cursor } from './components/Cursor'
 import { Intro } from './components/Intro'
@@ -9,6 +10,7 @@ import { Skills } from './components/Skills'
 import { Education } from './components/Education'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
+import { ContactForm } from './components/ContactForm'
 
 type StageProps = {
   children: React.ReactNode
@@ -34,6 +36,7 @@ function Stage({ children, dark = false, z, flow = false }: StageProps) {
 
 export default function App() {
   useSmoothScroll()
+  const [contactOpen, setContactOpen] = useState(false)
 
   if(window.screen.width < 768) {
     skillscroll = true;
@@ -42,7 +45,7 @@ export default function App() {
     <div className="relative min-h-screen bg-paper text-ink">
       <Intro />
       <Cursor />
-      <Navigation />
+      <Navigation onContactClick={() => setContactOpen(true)} />
 
       <main className="relative">
         <Stage z={10}><Hero /></Stage>
@@ -54,6 +57,7 @@ export default function App() {
       </main>
 
       <Footer />
+      <ContactForm open={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   )
 }

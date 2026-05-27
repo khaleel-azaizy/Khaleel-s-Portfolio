@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
 import Lenis from 'lenis'
 
+let lenisInstance: Lenis | null = null
+
+export function getLenis() {
+  return lenisInstance
+}
+
 export function useSmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
@@ -9,6 +15,7 @@ export function useSmoothScroll() {
       smoothWheel: true,
       wheelMultiplier: 1.0,
     })
+    lenisInstance = lenis
 
     function raf(time: number) {
       lenis.raf(time)
@@ -17,6 +24,7 @@ export function useSmoothScroll() {
     requestAnimationFrame(raf)
 
     return () => {
+      lenisInstance = null
       lenis.destroy()
     }
   }, [])

@@ -30,7 +30,6 @@ export function Intro() {
         >
           <div className="px-6 md:px-10 py-5 flex items-center justify-between eyebrow text-paper/70">
             <span>Khaleel Azaizy — Portfolio</span>
-            <span className="mono">Booting interface…</span>
           </div>
 
           <div className="flex-1 grid grid-cols-12 items-end px-6 md:px-10 pb-10">
