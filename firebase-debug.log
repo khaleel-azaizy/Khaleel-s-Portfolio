@@ -1,0 +1,21 @@
+[debug] [2026-05-27T19:22:09.318Z] ----------------------------------------------------------------------
+[debug] [2026-05-27T19:22:09.320Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\khaleel azaizy\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-05-27T19:22:09.321Z] CLI Version:   15.10.0
+[debug] [2026-05-27T19:22:09.321Z] Platform:      win32
+[debug] [2026-05-27T19:22:09.321Z] Node Version:  v24.13.0
+[debug] [2026-05-27T19:22:09.321Z] Time:          Wed May 27 2026 22:22:09 GMT+0300 (Israel Daylight Time)
+[debug] [2026-05-27T19:22:09.321Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-27T19:22:11.947Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-27T19:22:11.948Z] > authorizing via signed-in user (khaleelazaizy@gmail.com)
+[debug] [2026-05-27T19:22:11.948Z] [iam] checking project my-portfolio-c83e2 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-05-27T19:22:11.949Z] Checked if tokens are valid: false, expires at: 1779897465893
+[debug] [2026-05-27T19:22:11.949Z] Checked if tokens are valid: false, expires at: 1779897465893
+[debug] [2026-05-27T19:22:11.949Z] > refreshing access token with scopes: []
+[debug] [2026-05-27T19:22:11.950Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-27T19:22:11.950Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-27T19:22:12.205Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-27T19:22:12.205Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-27T19:22:12.215Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-portfolio-c83e2:testIamPermissions [none]
+[debug] [2026-05-27T19:22:12.216Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-portfolio-c83e2:testIamPermissions  x-goog-user-project=my-portfolio-c83e2
+[debug] [2026-05-27T19:22:12.216Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-portfolio-c83e2:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}

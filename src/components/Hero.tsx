@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { RevealLine } from './RevealText'
 import { Marquee } from './Marquee'
 import { projects, skills } from '../data/info'
-import drawing from '../public/drawing.svg'
+import { HeroDrawing } from './HeroDrawing'
 
 const ROLES = ['full-stack', 'data-driven', 'AI-integrated', 'production-grade']
 
@@ -28,10 +28,8 @@ export function Hero() {
         transition={{ duration: 1.4, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center md:justify-start md:pl-[2%] select-none"
       >
-        <img
-          src={drawing}
-          alt=""
-          className="h-[95%] sm:h-[95%] md:h-[100%] w-auto max-w-[110%] sm:max-w-[90%] md:max-w-[50%] object-contain opacity-90"
+        <HeroDrawing
+          className="text-ink/90 h-[95%] sm:h-[95%] md:h-[100%] aspect-[210/297] max-w-[110%] sm:max-w-[90%] md:max-w-[50%]"
         />
       </motion.div>
 

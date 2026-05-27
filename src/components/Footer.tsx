@@ -18,9 +18,15 @@ export function Footer() {
         </div>
         <div className="col-span-6 md:col-span-4 space-y-1">
           <div>Elsewhere</div>
-          <a className="block link-arc text-ink-2" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-          <a className="block link-arc text-ink-2" href={profile.linkedIn} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-          <a className="block link-arc text-ink-2" href={`mailto:${profile.email}`}>Gmail ↗</a>
+          <a className="social-link social-link--block link-arc text-ink-2" href={profile.github} target="_blank" rel="noopener noreferrer">
+            GitHub <span className="social-arrow" aria-hidden>↗</span>
+          </a>
+          <a className="social-link social-link--block link-arc text-ink-2" href={profile.linkedIn} target="_blank" rel="noopener noreferrer">
+            LinkedIn <span className="social-arrow" aria-hidden>↗</span>
+          </a>
+          <a className="social-link social-link--block link-arc text-ink-2" href={`mailto:${profile.email}`}>
+            Gmail <span className="social-arrow" aria-hidden>↗</span>
+          </a>
         </div>
         <div className="col-span-12 md:col-span-4 space-y-1 md:text-right">
           <div className="text-ink-2">© {new Date().getFullYear()} Khaleel Azaizy</div>

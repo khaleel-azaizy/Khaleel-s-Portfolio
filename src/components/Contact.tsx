@@ -147,13 +147,14 @@ export function Contact() {
                     transition={{ duration: 0.5, delay: 0.3 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <a
-                      className="link-arc font-display text-2xl"
+                      className="social-link link-arc font-display text-2xl"
                       href={l.href}
                       target={l.external ? '_blank' : undefined}
                       rel={l.external ? 'noopener noreferrer' : undefined}
                       data-cursor="hover"
                     >
                       {l.label}
+                      <span className="social-arrow" aria-hidden>↗</span>
                     </a>
                   </motion.li>
                 ))}

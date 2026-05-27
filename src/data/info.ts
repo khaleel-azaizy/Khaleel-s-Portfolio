@@ -1,7 +1,7 @@
 import {
   FaMobileAlt, FaCar, FaGlobe, FaBrain, FaHeartbeat, FaPlug, FaFlask, FaComments,
   FaHtml5, FaCss3Alt, FaJs, FaReact, FaAngular, FaBootstrap, FaNodeJs, FaPython, FaJava, FaPhp,
-  FaFire, FaGitAlt, FaGithub, FaDocker, FaNpm, FaTerminal,
+  FaFire, FaGitAlt, FaGithub, FaDocker, FaNpm, FaTerminal,FaBaby,
 } from 'react-icons/fa'
 import { SiTypescript, SiExpress, SiMongodb, SiMysql, SiFigma } from 'react-icons/si'
 import { VscCode } from 'react-icons/vsc'
@@ -44,7 +44,19 @@ export const projects: Project[] = [
     links: [{ label: 'Visit Site', url: 'https://aj-motors.site/' }],
   },
   {
-    num: '02',
+  num: '02',
+  title: 'Baby Fashion',
+  type: 'E-Commerce Platform',
+  year: '2025',
+  description:
+    'A dual-application baby clothing store — customer storefront and admin dashboard — with multilingual support, cart and checkout flow, order tracking with estimated delivery, and Firebase-backed product, image, and inventory management.',
+  tags: ['React', 'Vite', 'Firebase', 'Three.js', 'i18n'],
+  icon: FaBaby,
+  accent: '#f4a6c0',
+  links: [{ label: 'Visit Site', url: 'https://baby-fashion.site/' }],
+ },
+  {
+    num: '03',
     title: 'Daily Habits Tracker',
     type: 'Full-Stack PWA',
     year: '2024',
@@ -56,7 +68,7 @@ export const projects: Project[] = [
     links: [{ label: 'Source', url: 'https://github.com/khaleel-azaizy/Daily-Habit-Tracker' }],
   },
   {
-    num: '03',
+    num: '04',
     title: 'Baby Fashion Store',
     type: 'E-Commerce PWA',
     year: '2024',
@@ -68,7 +80,7 @@ export const projects: Project[] = [
     links: [{ label: 'Source', url: 'https://github.com/khaleel-azaizy/Baby-Fashion' }],
   },
   {
-    num: '04',
+    num: '05',
     title: 'Travel Diary',
     type: 'Social Platform',
     year: '2024',
@@ -83,7 +95,7 @@ export const projects: Project[] = [
     ],
   },
   {
-    num: '05',
+    num: '06',
     title: 'Income Classifier',
     type: 'Neural Network',
     year: '2024',
@@ -95,7 +107,7 @@ export const projects: Project[] = [
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1iGGvt2jLmkD2pvvzmB9UGclbOle-PbnY' }],
   },
   {
-    num: '06',
+    num: '07',
     title: 'Vitals Simulator',
     type: 'Healthcare IoT',
     year: '2024',
@@ -107,7 +119,7 @@ export const projects: Project[] = [
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1ysOhiV-WObB7A5XS57omxPijnWvrYH1n' }],
   },
   {
-    num: '07',
+    num: '08',
     title: 'TCP/UDP File Transfer',
     type: 'Network Programming',
     year: '2023',
@@ -119,7 +131,7 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    num: '08',
+    num: '09',
     title: 'ML Lab',
     type: 'Academic Research',
     year: '2024',
@@ -131,7 +143,7 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    num: '09',
+    num: '10',
     title: 'NLP Final Project',
     type: 'Language Models',
     year: '2025',

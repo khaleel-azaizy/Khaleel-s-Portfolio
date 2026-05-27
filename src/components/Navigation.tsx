@@ -96,12 +96,11 @@ export function Navigation({ onContactClick }: NavigationProps) {
           <span className="pulse-dot" aria-hidden />
           <button
             onClick={onContactClick}
-            className="eyebrow tracking-wider inline-flex items-center gap-2 border-b border-current/40 hover:border-ember hover:text-ember transition-colors pb-0.5"
-            style={{ color: 'inherit' }}
+            className="cta-pill"
             data-cursor="hover"
           >
             Contact me
-            <span className="text-ember">↗</span>
+            <span className="cta-arrow" aria-hidden>↗</span>
           </button>
         </div>
         <a

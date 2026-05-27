@@ -137,27 +137,38 @@ body::after {
   overflow: visible;
 }
 
-/* !important required: the path ships with inline style="stroke-width:0.263"
-   which would otherwise win the cascade and hide the line being drawn. */
+/* Outline path — strokes the figure line by line, fill stays transparent. */
 .hero-drawing path {
-  fill: transparent;
+  fill: transparent !important;
   stroke: currentColor;
-  stroke-width: 0.55 !important;
+  stroke-width: 0.35 !important;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: var(--draw-length, 999999);
   stroke-dashoffset: var(--draw-length, 999999);
-  transition:
-    stroke-dashoffset 2.8s cubic-bezier(0.16, 1, 0.3, 1),
-    fill 0.7s ease-in 1.9s,
-    stroke-width 0.7s ease-in 2.1s;
+  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-drawing.is-drawn path {
   stroke-dashoffset: 0;
-  fill: currentColor;
-  stroke-width: 0 !important;
   pointer-events: visiblePainted;
+}
+
+/* Fill clone — sits underneath the outline and paints itself in via
+   a clip-path wipe that starts once the outline is nearly done. */
+.hero-drawing path.is-fill-clone {
+  fill: currentColor !important;
+  stroke: none !important;
+  clip-path: inset(100% 0 0 0);
+  -webkit-clip-path: inset(100% 0 0 0);
+  transition:
+    clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1) 1.7s,
+    -webkit-clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1) 1.7s;
+}
+
+.hero-drawing.is-drawn path.is-fill-clone {
+  clip-path: inset(0 0 0 0);
+  -webkit-clip-path: inset(0 0 0 0);
 }
 
 /* ───────────────────── typography utilities ───────────────────── */
@@ -286,3 +297,111 @@ body::after {
 
 /* interactive cursor cues */
 a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
+
+/* ───────────── button-like CTA pill (editorial, subtle) ─────────────
+   Used for in-flow CTAs that look like text but need to read as buttons:
+   "Visit Site", "Source", "More on GitHub", etc. */
+.cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: inherit;
+  background: transparent;
+  transition:
+    background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-pill .cta-arrow {
+  display: inline-block;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--ember);
+}
+.cta-pill:hover {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--paper);
+}
+.cta-pill:hover .cta-arrow {
+  color: var(--paper);
+  transform: translateX(4px);
+}
+.cta-pill:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+}
+
+/* social row link — adds a clear arrow + subtle nudge so it reads as a link.
+   Use the .social-link__row variant when the link needs to stack as a block. */
+.social-link {
+  align-items: center;
+  gap: 0.4rem;
+  width: max-content;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.social-link:not(.social-link--block) {
+  display: inline-flex;
+}
+.social-link--block {
+  display: flex;
+}
+.social-link .social-arrow {
+  color: var(--ember);
+  font-size: 0.75em;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+.social-link:hover .social-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* mobile project row chevron — rotates 90deg when expanded */
+.row-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgb(var(--c-ink) / 0.35);
+  border-radius: 999px;
+  color: var(--ember);
+  flex: none;
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.35s ease,
+    border-color 0.35s ease;
+}
+.row-chevron.is-open {
+  transform: rotate(90deg);
+  background: var(--ember);
+  color: var(--paper);
+  border-color: var(--ember);
+}
+
+/* mobile collapsible body for project rows — grid-rows trick animates
+   auto-height without measuring children. */
+.collapse-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.4s ease,
+    margin 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.collapse-body > .collapse-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.collapse-body.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
