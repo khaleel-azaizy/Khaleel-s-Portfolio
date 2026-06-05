@@ -18,7 +18,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-[100vh] px-6 md:px-10 pt-32 md:pt-28 pb-0 flex flex-col"
+      className="relative min-h-[100svh] px-6 md:px-10 pt-32 md:pt-28 pb-0 flex flex-col"
     >
       {/* Hero sketch — centered on mobile, left-anchored on desktop */}
       <motion.div
@@ -29,7 +29,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center md:justify-start md:pl-[2%] select-none"
       >
         <HeroDrawing
-          className="text-ink/90 h-[95vh] sm:h-[95vh] md:h-[100vh] aspect-[210/297] max-w-[110%] sm:max-w-[90%] md:max-w-[50%]"
+          className="text-ink/90 h-[95svh] sm:h-[95svh] md:h-[100svh] aspect-[210/297] max-w-[110%] sm:max-w-[90%] md:max-w-[50%]"
         />
       </motion.div>
 
