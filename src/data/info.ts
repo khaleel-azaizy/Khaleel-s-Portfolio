@@ -69,18 +69,6 @@ export const projects: Project[] = [
   },
   {
     num: '04',
-    title: 'Baby Fashion Store',
-    type: 'E-Commerce PWA',
-    year: '2024',
-    description:
-      'An online store for baby fashion — modern catalog, cart, and order flow. Lightweight, fast, and tuned for mobile shoppers.',
-    tags: ['React', 'Vite', 'Firebase', 'PWA'],
-    icon: FaMobileAlt,
-    accent: '#c97a4c',
-    links: [{ label: 'Source', url: 'https://github.com/khaleel-azaizy/Baby-Fashion' }],
-  },
-  {
-    num: '05',
     title: 'Travel Diary',
     type: 'Social Platform',
     year: '2024',
@@ -95,7 +83,7 @@ export const projects: Project[] = [
     ],
   },
   {
-    num: '06',
+    num: '05',
     title: 'Income Classifier',
     type: 'Neural Network',
     year: '2024',
@@ -107,7 +95,7 @@ export const projects: Project[] = [
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1iGGvt2jLmkD2pvvzmB9UGclbOle-PbnY' }],
   },
   {
-    num: '07',
+    num: '06',
     title: 'Vitals Simulator',
     type: 'Healthcare IoT',
     year: '2024',
@@ -119,7 +107,7 @@ export const projects: Project[] = [
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1ysOhiV-WObB7A5XS57omxPijnWvrYH1n' }],
   },
   {
-    num: '08',
+    num: '07',
     title: 'TCP/UDP File Transfer',
     type: 'Network Programming',
     year: '2023',
@@ -131,7 +119,7 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    num: '09',
+    num: '08',
     title: 'ML Lab',
     type: 'Academic Research',
     year: '2024',
@@ -143,7 +131,7 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    num: '10',
+    num: '09',
     title: 'NLP Final Project',
     type: 'Language Models',
     year: '2025',
