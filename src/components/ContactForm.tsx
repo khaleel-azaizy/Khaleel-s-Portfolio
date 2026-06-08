@@ -7,53 +7,14 @@ type Props = {
   onClose: () => void
 }
 
-type Provider = {
-  id: 'gmail' | 'outlook' | 'yahoo' | 'mailto'
-  label: string
-  hint: string
-  build: (to: string, subject: string, body: string) => string
-  newTab: boolean
-}
-
-const providers: Provider[] = [
-  {
-    id: 'gmail',
-    label: 'Gmail',
-    hint: 'mail.google.com',
-    build: (to, su, body) =>
-      `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}&body=${body}`,
-    newTab: true,
-  },
-  {
-    id: 'outlook',
-    label: 'Outlook',
-    hint: 'outlook.live.com',
-    build: (to, su, body) =>
-      `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}&body=${body}`,
-    newTab: true,
-  },
-  {
-    id: 'yahoo',
-    label: 'Yahoo',
-    hint: 'compose.mail.yahoo.com',
-    build: (to, su, body) =>
-      `https://compose.mail.yahoo.com/?to=${to}&subject=${su}&body=${body}`,
-    newTab: true,
-  },
-  {
-    id: 'mailto',
-    label: 'Default app',
-    hint: 'Apple Mail · Thunderbird · …',
-    build: (to, su, body) => `mailto:${to}?subject=${su}&body=${body}`,
-    newTab: false,
-  },
-]
+// Replace this with your Formspree form ID
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xrevqraa'
 
 export function ContactForm({ open, onClose }: Props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
-  const [stage, setStage] = useState<'form' | 'choose'>('form')
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
   useEffect(() => {
     if (!open) return
@@ -70,26 +31,38 @@ export function ContactForm({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) {
-      setStage('form')
+      setTimeout(() => {
+        setStatus('idle')
+        setName('')
+        setEmail('')
+        setMessage('')
+      }, 300)
     }
   }, [open])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStage('choose')
-  }
+    if (status === 'submitting') return
 
-  const openWith = (p: Provider) => {
-    const subject = encodeURIComponent(`Portfolio inquiry — ${name || 'Anonymous'}`)
-    const body = encodeURIComponent(`From: ${name}\nReply-to: ${email}\n\n${message}`)
-    const to = encodeURIComponent(profile.email)
-    const url = p.build(to, subject, body)
-    if (p.newTab) {
-      window.open(url, '_blank', 'noopener,noreferrer')
-    } else {
-      window.location.href = url
+    setStatus('submitting')
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
+      })
+
+      if (response.ok) {
+        setStatus('success')
+      } else {
+        setStatus('error')
+      }
+    } catch (error) {
+      setStatus('error')
     }
-    onClose()
   }
 
   return (
@@ -127,15 +100,15 @@ export function ContactForm({ open, onClose }: Props) {
               <div>
                 <div className="eyebrow text-ink-3">∗ Contact</div>
                 <h3 className="font-display text-3xl md:text-5xl leading-[1.05] tracking-snug font-light mt-2">
-                  {stage === 'form' ? (
+                  {status === 'success' ? (
                     <>
-                      Send a
-                      <span className="display-italic text-ember"> brief.</span>
+                      Message
+                      <span className="display-italic text-ember"> sent.</span>
                     </>
                   ) : (
                     <>
-                      Open with
-                      <span className="display-italic text-ember">…</span>
+                      Send a
+                      <span className="display-italic text-ember"> brief.</span>
                     </>
                   )}
                 </h3>
@@ -151,7 +124,29 @@ export function ContactForm({ open, onClose }: Props) {
             </div>
 
             <AnimatePresence mode="wait">
-              {stage === 'form' ? (
+              {status === 'success' ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-8 space-y-6"
+                >
+                  <p className="font-display text-xl md:text-2xl text-ink-2">
+                    Thank you for reaching out! I'll get back to you as soon as possible.
+                  </p>
+                  <div className="pt-6 border-t border-ink/15">
+                    <button
+                      onClick={onClose}
+                      className="group inline-flex items-center gap-3 font-display text-xl md:text-2xl border-b border-ink pb-1 hover:border-ember hover:text-ember transition-colors"
+                      data-cursor="hover"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
                 <motion.form
                   key="form"
                   initial={{ opacity: 0, y: 8 }}
@@ -164,11 +159,13 @@ export function ContactForm({ open, onClose }: Props) {
                   <Field label="Your name" htmlFor="cf-name">
                     <input
                       id="cf-name"
+                      name="name"
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors"
+                      disabled={status === 'submitting'}
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
                       placeholder="Jane Doe"
                     />
                   </Field>
@@ -176,11 +173,13 @@ export function ContactForm({ open, onClose }: Props) {
                   <Field label="Reply-to email" htmlFor="cf-email">
                     <input
                       id="cf-email"
+                      name="email"
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors"
+                      disabled={status === 'submitting'}
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
                       placeholder="jane@studio.com"
                     />
                   </Field>
@@ -188,84 +187,42 @@ export function ContactForm({ open, onClose }: Props) {
                   <Field label="Message" htmlFor="cf-message">
                     <textarea
                       id="cf-message"
+                      name="message"
                       required
                       rows={4}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-lg md:text-xl py-2 resize-none transition-colors"
+                      disabled={status === 'submitting'}
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-lg md:text-xl py-2 resize-none transition-colors disabled:opacity-50"
                       placeholder="What are you building?"
                     />
                   </Field>
 
+                  {status === 'error' && (
+                    <p className="text-red-500 font-display text-lg">
+                      Oops! There was a problem submitting your form. Please try again.
+                    </p>
+                  )}
+
                   <div className="flex items-center justify-between pt-2">
                     <span className="mono text-[11px] text-ink-3">
-                      Pick your mail provider next
+                      Powered by Formspree
                     </span>
                     <button
                       type="submit"
-                      className="group inline-flex items-center gap-3 font-display text-xl md:text-2xl border-b border-ink pb-1 hover:border-ember hover:text-ember transition-colors"
+                      disabled={status === 'submitting'}
+                      className="group inline-flex items-center gap-3 font-display text-xl md:text-2xl border-b border-ink pb-1 hover:border-ember hover:text-ember transition-colors disabled:opacity-50"
                       data-cursor="hover"
                     >
-                      Continue
-                      <span className="text-ember transition-transform duration-500 ease-out-expo group-hover:translate-x-2">
-                        →
-                      </span>
+                      {status === 'submitting' ? 'Sending...' : 'Send message'}
+                      {!status.includes('submitting') && (
+                        <span className="text-ember transition-transform duration-500 ease-out-expo group-hover:translate-x-2">
+                          →
+                        </span>
+                      )}
                     </button>
                   </div>
                 </motion.form>
-              ) : (
-                <motion.div
-                  key="choose"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-8"
-                >
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {providers.map((p, i) => (
-                      <motion.li
-                        key={p.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.05 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => openWith(p)}
-                          className="w-full group flex items-center justify-between gap-4 border border-ink/20 hover:border-ember hover:text-ember transition-colors px-4 py-4 text-left"
-                          data-cursor="hover"
-                        >
-                          <span>
-                            <span className="block font-display text-2xl tracking-snug">
-                              {p.label}
-                            </span>
-                            <span className="mono text-[11px] text-ink-3 group-hover:text-ember/80">
-                              {p.hint}
-                            </span>
-                          </span>
-                          <span className="text-ember translate-y-0 transition-transform duration-500 ease-out-expo group-hover:translate-x-2 font-display text-2xl">
-                            ↗
-                          </span>
-                        </button>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <div className="flex items-center justify-between pt-6 mt-6 border-t border-ink/15">
-                    <button
-                      type="button"
-                      onClick={() => setStage('form')}
-                      className="mono text-[11px] text-ink-3 hover:text-ember transition-colors uppercase tracking-wider"
-                      data-cursor="hover"
-                    >
-                      ← Edit message
-                    </button>
-                    <span className="mono text-[11px] text-ink-3">
-                      To · {profile.email}
-                    </span>
-                  </div>
-                </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
