@@ -2,18 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ───────────────────────── base ───────────────────────── */
+/* ───────────────────────── base ─────────────────────────
+   "Instrument panel" — cold near-black ground, cool greys,
+   one amber accent, and a cyan reserved strictly for live data. */
 :root {
   /* RGB triplets — consumed by tailwind via rgb(var(--c-x) / <alpha>) */
-  --c-paper: 235 229 216;
-  --c-paper-2: 226 218 201;
-  --c-paper-3: 214 205 185;
-  --c-ink: 21 17 13;
-  --c-ink-2: 58 52 44;
-  --c-ink-3: 107 99 83;
-  --c-ember: 221 68 35;
-  --c-ember-deep: 184 52 26;
-  --c-moss: 92 102 72;
+  --c-paper: 10 13 17;        /* #0A0D11  base ground */
+  --c-paper-2: 20 25 32;      /* #141920  raised surface */
+  --c-paper-3: 30 37 47;      /* #1E252F  edge / chip fill */
+  --c-ink: 230 234 240;       /* #E6EAF0  primary text */
+  --c-ink-2: 167 176 190;     /* #A7B0BE  secondary text */
+  --c-ink-3: 139 150 166;     /* #8B96A6  utility — 6.5:1 on base */
+  --c-ember: 234 68 41;       /* #EA4429  the one accent — 5.0:1 on base */
+  --c-signal: 79 209 224;     /* #4FD1E0  live / data states ONLY */
+  --c-alert: 255 138 128;     /* #FF8A80  errors — lifted off the accent red
+                                 so a failed form never reads as brand chrome */
 
   /* string aliases for raw CSS usage */
   --paper: rgb(var(--c-paper));
@@ -23,25 +26,18 @@
   --ink-2: rgb(var(--c-ink-2));
   --ink-3: rgb(var(--c-ink-3));
   --ember: rgb(var(--c-ember));
-  --moss: rgb(var(--c-moss));
+  --signal: rgb(var(--c-signal));
 }
 
-/* dark theme — swaps paper/ink so any tailwind utility on these tokens
-   (text-ink, bg-paper, border-ink/20, …) automatically inverts.   */
-.theme-dark {
-  --c-paper: 18 16 14;       /* near-black "paper" */
-  --c-paper-2: 30 26 22;
-  --c-paper-3: 44 38 32;
-  --c-ink: 240 234 222;       /* cream "ink" reads as light on dark */
-  --c-ink-2: 196 186 168;
-  --c-ink-3: 138 130 112;
+/* Raised stage — the page is committed dark, so tonal rhythm between
+   sections comes from elevation rather than inverting paper/ink. Any
+   utility on these tokens (bg-paper, border-ink/20, …) follows along. */
+.stage-raised {
+  --c-paper: 20 25 32;
+  --c-paper-3: 42 51 65;
 
   --paper: rgb(var(--c-paper));
-  --paper-2: rgb(var(--c-paper-2));
   --paper-3: rgb(var(--c-paper-3));
-  --ink: rgb(var(--c-ink));
-  --ink-2: rgb(var(--c-ink-2));
-  --ink-3: rgb(var(--c-ink-3));
 }
 
 html, body {
@@ -61,6 +57,8 @@ html {
 
 body {
   overflow-x: clip;
+  font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'ss01', 'ss03', 'cv11';
 }
 
 #root {
@@ -68,9 +66,9 @@ body {
   overflow-x: clip;
 }
 
-body {
-  font-family: 'Geist', system-ui, -apple-system, sans-serif;
-  font-feature-settings: 'ss01', 'ss03', 'cv11';
+/* Clear the fixed mobile section bar so it never covers the footer. */
+@media (max-width: 1023px) {
+  #root { padding-bottom: 53px; }
 }
 
 /* hide native scrollbar (Lenis handles scrolling) */
@@ -79,39 +77,32 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 ::selection {
   background: var(--ember);
-  color: var(--paper);
+  color: rgb(10 13 17);
 }
 
-/* paper grain — kept above stacked sections so the texture sits on every panel */
+/* Film grain. Light specks at very low opacity — a dark-on-dark multiply
+   grain (the previous approach) is a no-op against a near-black ground. */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 70;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* edge vignette */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 70;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.18) 100%);
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ───────────── stacked-section reveal ─────────────
    `.stack-section` pins to top while the next stage rises over it.
    `.stack-flow` keeps z-index stacking (so it rises over the
-   previous sticky section) but allows tall content to scroll. */
+   previous sticky section) but allows tall content to scroll.
+
+   NOTE: never put transform/filter on these elements — either creates a
+   containing block and breaks `position: sticky`. The scroll-linked
+   scale and dim live on an inner wrapper (see Stage in App.tsx). */
 .stack-section,
 .stack-flow {
   width: 100%;
-  background: var(--paper);
   color: var(--ink);
   isolation: isolate;
 }
@@ -119,73 +110,319 @@ body::after {
   position: sticky;
   top: 0;
   min-height: 100vh;
+  /* Void behind the receding panel. As a stage scales down, this shows as a
+     thin rim on three sides and reads as depth rather than a seam. */
+  background: rgb(4 6 9);
 }
 .stack-flow {
   position: relative;
+  background: var(--paper);
 }
 
-/* ───────────────────── hero self-drawing sketch ───────────────────── */
-.hero-drawing,
-.hero-drawing > svg {
+/* Inner wrapper that carries the scroll-linked transform. No will-change
+   here on purpose — six permanently promoted full-viewport layers costs
+   more than it saves, and framer-motion promotes them while animating. */
+.stage-inner {
+  position: relative;
+  min-height: 100vh;
+  background: var(--paper);
+  transform-origin: 50% 0%;
+}
+
+/* The rising panel's leading edge — makes the stack read as physical sheets
+   rather than a crossfade. */
+.stage-inner,
+.stack-flow {
+  border-top: 1px solid rgb(var(--c-ink) / 0.12);
+  box-shadow: 0 -32px 64px -16px rgb(0 0 0 / 0.7);
+}
+
+/* Scroll-linked recede overlay — cheaper than blurring a full viewport. */
+.stage-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
   pointer-events: none;
+  background: rgb(4 6 9);
 }
 
-.hero-drawing > svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
+/* ───────────────────── hero architecture schematic ─────────────────────
+   A technical drawing of the thing the hero sentence describes. Pulses
+   travel client → service → store; `--flow-dur` is rewritten from the
+   scroll-velocity MotionValue, so the system speeds up as you move. */
+/* Phones get one compact spec row per layer — tag inline with the label. The
+   stacked-block form costs ~170px of vertical, which the hero cannot spare on
+   a 667px screen. From md up it opens into a proper panel. */
+.node-group {
+  --flow-dur: 2.6s;
+  flex: 1 1 0;
+  min-width: 0;
+  border: 1px solid rgb(var(--c-ink) / 0.15);
+  background: var(--paper-2);
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.5rem 0.75rem;
 }
 
-/* Outline path — strokes the figure line by line, fill stays transparent. */
-.hero-drawing path {
-  fill: transparent !important;
-  stroke: currentColor;
-  stroke-width: 0.35 !important;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: var(--draw-length, 999999);
-  stroke-dashoffset: var(--draw-length, 999999);
-  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+.node-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember);
+  flex: none;
 }
 
-.hero-drawing.is-drawn path {
-  stroke-dashoffset: 0;
-  pointer-events: visiblePainted;
+.node { min-width: 0; }
+.node + .node { border-top: 1px solid rgb(var(--c-ink) / 0.1); }
+
+.node-label {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-stretch: 112%;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Fill clone — sits underneath the outline and paints itself in via
-   a clip-path wipe that starts once the outline is nearly done. */
-.hero-drawing path.is-fill-clone {
-  fill: currentColor !important;
-  stroke: none !important;
-  clip-path: inset(100% 0 0 0);
-  -webkit-clip-path: inset(100% 0 0 0);
-  transition:
-    clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1) 1.7s,
-    -webkit-clip-path 1.6s cubic-bezier(0.16, 1, 0.3, 1) 1.7s;
+.node-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.hero-drawing.is-drawn path.is-fill-clone {
-  clip-path: inset(0 0 0 0);
-  -webkit-clip-path: inset(0 0 0 0);
+/* Connector between stacked rows. The stack only renders below lg, so this
+   stays vertical at every size it is visible at. */
+.conn {
+  position: relative;
+  flex: none;
+  align-self: center;
+  width: 1px;
+  height: 18px;
+  background: rgb(var(--c-ink) / 0.25);
 }
 
-/* ───────────────────── typography utilities ───────────────────── */
+.conn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ember);
+  box-shadow: 0 0 6px rgb(var(--c-ember) / 0.7);
+  animation: conn-flow-v var(--flow-dur, 2.6s) linear var(--flow-delay, 0s) infinite;
+}
+
+@keyframes conn-flow-v {
+  0%        { transform: translate(-50%, 0);    opacity: 0; }
+  15%, 85%  { opacity: 1; }
+  100%      { transform: translate(-50%, 13px); opacity: 0; }
+}
+
+
+/* ── wide branching layout (lg and up) ──────────────────────────────────────
+   Every row centre is derived from --node-h and --row-gap, so the connector
+   stubs stay aligned to the nodes no matter what those two are set to. That is
+   what lets the short-viewport rules further down rescale the whole schematic
+   without any of the elbows drifting off their targets. */
+.dg-wide {
+  --node-h: 76px;
+  --row-gap: 28px;
+  --stub: 24px;
+  --pulse-d: 5px;
+
+  --body-h: calc(var(--node-h) * 2 + var(--row-gap));
+  --row-a: calc(var(--node-h) / 2);
+  --row-b: calc(var(--node-h) * 1.5 + var(--row-gap));
+  --row-mid: calc(var(--body-h) / 2);
+}
+
+.dg-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dg-tag {
+  height: 20px;
+  line-height: 20px;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+
+.dg-body {
+  height: var(--body-h);
+  display: flex;
+  flex-direction: column;
+  gap: var(--row-gap);
+}
+.dg-body--single { justify-content: center; }
+
+.dg-node {
+  height: var(--node-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.9rem;
+  border: 1px solid rgb(var(--c-ink) / 0.15);
+  background: var(--paper-2);
+}
+
+.dg-label {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-stretch: 112%;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dg-sub {
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dg-conn {
+  position: relative;
+  flex: none;
+  width: calc(var(--stub) * 2);
+  height: var(--body-h);
+  /* clears the tag row so stubs align to the body, not the column */
+  margin-top: 28px;
+}
+
+.dg-line {
+  position: absolute;
+  height: 1px;
+  background: rgb(var(--c-ink) / 0.25);
+}
+
+/* Incoming stubs (left half), outgoing stubs (right half), and the vertical
+   spine that gathers or splits them. */
+.dg-line--a        { top: var(--row-a);   left: 0;           width: var(--stub); }
+.dg-line--b        { top: var(--row-b);   left: 0;           width: var(--stub); }
+.dg-line--mid      { top: var(--row-mid); left: 0;           width: var(--stub); }
+.dg-line--a2       { top: var(--row-a);   left: var(--stub); width: var(--stub); }
+.dg-line--b2       { top: var(--row-b);   left: var(--stub); width: var(--stub); }
+.dg-line--mid2     { top: var(--row-mid); left: var(--stub); width: var(--stub); }
+.dg-line--full-a   { top: var(--row-a);   left: 0;           width: calc(var(--stub) * 2); }
+.dg-line--full-b   { top: var(--row-b);   left: 0;           width: calc(var(--stub) * 2); }
+.dg-line--spine {
+  top: var(--row-a);
+  left: var(--stub);
+  width: 1px;
+  height: calc(var(--row-b) - var(--row-a));
+}
+
+/* Junction where branches meet. */
+.dg-node-dot {
+  position: absolute;
+  top: var(--row-mid);
+  left: var(--stub);
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgb(var(--c-ink) / 0.45);
+  transform: translate(-50%, -50%);
+}
+
+.dg-pulse {
+  position: absolute;
+  width: var(--pulse-d);
+  height: var(--pulse-d);
+  border-radius: 999px;
+  background: var(--ember);
+  box-shadow: 0 0 6px rgb(var(--c-ember) / 0.7);
+  animation: dg-flow var(--flow-dur, 2.6s) linear var(--flow-delay, 0s) infinite;
+}
+
+.dg-pulse--mid    { top: var(--row-mid); left: var(--stub); --pw: calc(var(--stub) - var(--pulse-d)); }
+.dg-pulse--a      { top: var(--row-a);   left: var(--stub); --pw: calc(var(--stub) - var(--pulse-d)); }
+.dg-pulse--b      { top: var(--row-b);   left: var(--stub); --pw: calc(var(--stub) - var(--pulse-d)); }
+.dg-pulse--full-a { top: var(--row-a);   left: 0;           --pw: calc(var(--stub) * 2 - var(--pulse-d)); }
+.dg-pulse--full-b { top: var(--row-b);   left: 0;           --pw: calc(var(--stub) * 2 - var(--pulse-d)); }
+
+@keyframes dg-flow {
+  0%       { transform: translate(0, -50%);         opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100%     { transform: translate(var(--pw), -50%); opacity: 0; }
+}
+
+/* ── short viewports ────────────────────────────────────────────────────────
+   The hero holds a fixed-height schematic, so on laptop screens the
+   surrounding rhythm and the schematic both give way rather than the section
+   spilling past one screen. */
+@media (max-height: 860px) {
+  .dg-wide {
+    --node-h: 62px;
+    --row-gap: 20px;
+  }
+  .dg-label { font-size: 0.95rem; }
+  .hero-shell { padding-top: 5.5rem; }
+  .hero-band { gap: 1.5rem; }
+}
+
+@media (max-height: 800px) {
+  .hero-name { font-size: clamp(2.75rem, 7vw, 5.5rem); }
+}
+
+/* 1280x720 and similar — the tightest common laptop. */
+@media (max-height: 760px) {
+  .dg-wide {
+    --node-h: 56px;
+    --row-gap: 18px;
+  }
+  .hero-shell { padding-top: 4.5rem; }
+  .hero-band { gap: 1.25rem; }
+}
+
+/* ───────────────────── typography utilities ─────────────────────
+   Archivo carries a real width axis (62–125%). Expose it via the
+   high-level `font-stretch` property, NOT font-variation-settings, so
+   Tailwind's font-weight utilities still reach the variable wght axis. */
 .font-display {
-  font-family: 'Fraunces', 'Times New Roman', serif;
-  font-feature-settings: 'ss01', 'ss03';
-  font-variation-settings: 'SOFT' 50, 'WONK' 0;
+  font-family: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  font-stretch: 112%;
+  letter-spacing: -0.04em;
 }
 
-.font-display.swash {
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+/* Replaces the old Fraunces italic-swash accent, which depended on
+   SOFT/WONK axes that Archivo does not have. Emphasis now comes from the
+   width axis; `.accent-word` adds colour, `.emph` does not. */
+.accent-word,
+.emph {
+  font-stretch: 125%;
+  font-weight: 600;
 }
-
-.display-italic {
-  font-style: italic;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-}
+.accent-word { color: var(--ember); }
+.emph { color: var(--ink); }
 
 .eyebrow {
   font-family: 'JetBrains Mono', monospace;
@@ -197,13 +434,47 @@ body::after {
 
 .mono { font-family: 'JetBrains Mono', monospace; }
 
+/* ───────────────────── status strip ─────────────────────
+   Live machine-readable state in the hero. Scrolls horizontally on
+   narrow viewports rather than wrapping into a ragged block. */
+.status-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.status-strip::-webkit-scrollbar { display: none; }
+.status-strip .sep { color: rgb(var(--c-ink) / 0.25); }
+.status-strip .val { color: var(--ink-2); }
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--signal);
+  flex: none;
+  animation: live-pulse 2.4s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--c-signal) / 0.5); }
+  50%      { box-shadow: 0 0 0 7px rgb(var(--c-signal) / 0); }
+}
+
 /* ───────────────────── motion primitives ───────────────────── */
 .reveal-line { display: block; overflow: hidden; }
 .reveal-line > span { display: inline-block; will-change: transform; }
 
 @keyframes ember-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(221,68,35,0.45); }
-  50%      { box-shadow: 0 0 0 8px rgba(221,68,35,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--c-ember) / 0.45); }
+  50%      { box-shadow: 0 0 0 8px rgb(var(--c-ember) / 0); }
 }
 .pulse-dot {
   width: 8px; height: 8px; border-radius: 999px;
@@ -220,17 +491,6 @@ body::after {
 @media (max-width: 768px) {
   .marquee-track { animation-duration: 18s; }
 }
-
-@keyframes drift {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-.drift { animation: drift 4s ease-in-out infinite; }
-
-@keyframes slow-spin {
-  to { transform: rotate(360deg); }
-}
-.spin-slow { animation: slow-spin 24s linear infinite; transform-origin: center; }
 
 /* ───────────────────── ambient hover ring ───────────────────── */
 .cursor-ring {
@@ -254,7 +514,7 @@ body::after {
 .hair {
   height: 1px;
   background: linear-gradient(to right, transparent, var(--ink-3) 12%, var(--ink-3) 88%, transparent);
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
 /* link underline reveal */
@@ -288,15 +548,79 @@ body::after {
 }
 .project-row:hover .arrow { opacity: 1; transform: translateX(4px); }
 
-/* big number outlined */
-.num-outline {
-  -webkit-text-stroke: 1px var(--ink-3);
-  color: transparent;
-  font-family: 'Fraunces', serif;
+/* ───────────── feature project card ─────────────
+   Reserved for shipped, commercial work. The accent is a real surface
+   here, not a garnish, so these two read louder than everything else. */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(var(--c-ink) / 0.14);
+  background: var(--paper-2);
+  transition:
+    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(120% 90% at 12% 0%, var(--accent) 0%, transparent 62%);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card:hover { border-color: rgb(var(--c-ink) / 0.3); }
+.feature-card:hover::before { opacity: 0.16; }
+.feature-card > * { position: relative; z-index: 1; }
+
+.feature-rule {
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+/* compact index row — the archive tier */
+.index-row {
+  transition: background 0.4s ease, padding-left 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.index-row:hover {
+  background: rgb(var(--c-ink) / 0.035);
+  padding-left: 0.75rem;
 }
 
 /* interactive cursor cues */
 a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
+
+/* ───────────── global keyboard focus ─────────────
+   Preflight strips UA outlines, so without this the nav rail, copy
+   buttons and accordion triggers have invisible focus. Zero specificity
+   via :where() so components can still override. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--ember);
+  color: rgb(10 13 17);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: translateY(-120%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: -4px;
+}
 
 /* ───────────── button-like CTA pill (editorial, subtle) ─────────────
    Used for in-flow CTAs that look like text but need to read as buttons:
@@ -328,15 +652,11 @@ a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
 .cta-pill:hover {
   background: var(--ember);
   border-color: var(--ember);
-  color: var(--paper);
+  color: rgb(10 13 17);
 }
 .cta-pill:hover .cta-arrow {
-  color: var(--paper);
+  color: rgb(10 13 17);
   transform: translateX(4px);
-}
-.cta-pill:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 3px;
 }
 
 /* social row link — adds a clear arrow + subtle nudge so it reads as a link.
@@ -382,7 +702,7 @@ a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
 .row-chevron.is-open {
   transform: rotate(90deg);
   background: var(--ember);
-  color: var(--paper);
+  color: rgb(10 13 17);
   border-color: var(--ember);
 }
 
@@ -404,4 +724,31 @@ a, button, [role='button'], [data-cursor='hover'] { cursor: pointer; }
 .collapse-body.is-open {
   grid-template-rows: 1fr;
   opacity: 1;
+}
+
+/* ───────────────────── reduced motion ─────────────────────
+   Covers every CSS-driven animation and transition. JS-driven motion
+   (Stage transforms, pointer parallax, framer-motion variants) opts out
+   separately via the useReducedMotion hook. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The schematic stays readable; only the travelling packets stop. */
+  .conn::after,
+  .dg-pulse {
+    display: none;
+  }
+
+  .stack-section,
+  .stack-flow {
+    position: relative;
+  }
 }

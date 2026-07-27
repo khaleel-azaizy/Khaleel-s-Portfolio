@@ -18,6 +18,12 @@ export const sections: { id: SectionId; label: string; index: string }[] = [
   { id: 'contact',   label: 'Contact',   index: '05' },
 ]
 
+/** Weight a project carries on the page.
+ *  - feature:  shipped, commercial, real users — gets a full card
+ *  - selected: substantial personal or course work — gets a full row
+ *  - index:    coursework and experiments — gets a compact archive line   */
+export type ProjectTier = 'feature' | 'selected' | 'index'
+
 export type Project = {
   num: string
   title: string
@@ -26,7 +32,12 @@ export type Project = {
   description: string
   tags: string[]
   icon: IconType
+  /** Accents are tuned for the near-black ground: saturated and luminous,
+   *  used as a radial wash and a rule. Amber belongs to the flagship. */
   accent: string
+  tier: ProjectTier
+  /** Deployed and serving real traffic. Drives the cyan LIVE chip. */
+  live?: boolean
   links: { label: string; url: string }[]
 }
 
@@ -40,7 +51,9 @@ export const projects: Project[] = [
       'A dual-application rental platform — customer storefront and admin dashboard — with multilingual support, real-time booking flow, and Firebase-backed inventory.',
     tags: ['React', 'Vite', 'Firebase', 'PWA', 'i18n'],
     icon: FaCar,
-    accent: '#dd4423',
+    accent: '#EA4429',
+    tier: 'feature',
+    live: true,
     links: [{ label: 'Visit Site', url: 'https://aj-motors.site/' }],
   },
   {
@@ -52,7 +65,9 @@ export const projects: Project[] = [
     'A dual-application baby clothing store — customer storefront and admin dashboard — with multilingual support, cart and checkout flow, order tracking with estimated delivery, and Firebase-backed product, image, and inventory management.',
   tags: ['React', 'Vite', 'Firebase', 'Three.js', 'i18n'],
   icon: FaBaby,
-  accent: '#f4a6c0',
+  accent: '#E8639B',
+  tier: 'feature',
+  live: true,
   links: [{ label: 'Visit Site', url: 'https://baby-fashion.site/' }],
  },
   {
@@ -64,7 +79,8 @@ export const projects: Project[] = [
       'Habit tracking with yearly and monthly calendar grids, streak analytics, and offline-first sync. Installable on mobile and desktop.',
     tags: ['React', 'Vite', 'Firebase', 'PWA'],
     icon: FaMobileAlt,
-    accent: '#5c6648',
+    accent: '#38C6A0',
+    tier: 'selected',
     links: [{ label: 'Source', url: 'https://github.com/khaleel-azaizy/Daily-Habit-Tracker' }],
   },
   {
@@ -76,7 +92,8 @@ export const projects: Project[] = [
       'A travelers’ social network with interactive maps, geotagged photo galleries, and a SQL-backed Express API.',
     tags: ['Angular', 'Express', 'SQL', 'Leaflet.js'],
     icon: FaGlobe,
-    accent: '#7a5e9a',
+    accent: '#8B7CF6',
+    tier: 'selected',
     links: [
       { label: 'Frontend', url: 'https://github.com/khaleel-azaizy/webDevelopment_Travel-Diary' },
       { label: 'Backend', url: 'https://github.com/khaleel-azaizy/webDevelopment_Travel-Diary-server' },
@@ -91,7 +108,8 @@ export const projects: Project[] = [
       'A PyTorch ANN reaching 85% accuracy on income-bracket prediction from US Census data. Includes feature engineering and training notebook.',
     tags: ['Python', 'PyTorch', 'Pandas', 'Scikit-learn'],
     icon: FaBrain,
-    accent: '#3a6b8c',
+    accent: '#4F9CF0',
+    tier: 'selected',
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1iGGvt2jLmkD2pvvzmB9UGclbOle-PbnY' }],
   },
   {
@@ -103,7 +121,8 @@ export const projects: Project[] = [
       'Simulated patient vitals streamed in real time with anomaly detection, visualizations, and threshold-based alerting.',
     tags: ['Python', 'Matplotlib', 'IoT'],
     icon: FaHeartbeat,
-    accent: '#b8341a',
+    accent: '#FF8A3D',
+    tier: 'index',
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1ysOhiV-WObB7A5XS57omxPijnWvrYH1n' }],
   },
   {
@@ -115,7 +134,8 @@ export const projects: Project[] = [
       'Java client–server file transfer over both TCP and UDP with throughput and reliability comparisons.',
     tags: ['Java', 'TCP', 'UDP', 'Networking'],
     icon: FaPlug,
-    accent: '#2f6e6e',
+    accent: '#2FB3A8',
+    tier: 'index',
     links: [],
   },
   {
@@ -127,7 +147,8 @@ export const projects: Project[] = [
       'A working notebook of supervised and unsupervised algorithms — regression, clustering, dimensionality reduction — built up across coursework.',
     tags: ['Python', 'Scikit-learn', 'NumPy', 'Jupyter'],
     icon: FaFlask,
-    accent: '#a37a2a',
+    accent: '#C0A15E',
+    tier: 'index',
     links: [],
   },
   {
@@ -139,7 +160,8 @@ export const projects: Project[] = [
       'Text classification and sentiment analysis built on transformer architectures. Evaluation pipeline included.',
     tags: ['Python', 'Transformers', 'PyTorch', 'NLP'],
     icon: FaComments,
-    accent: '#4e6b3a',
+    accent: '#6FCF5C',
+    tier: 'index',
     links: [],
   },
 ]

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FadeIn } from './RevealText'
 import { profile } from '../data/info'
-import { Marquee } from './Marquee'
 
 type CopyField = 'email' | 'phone' | null
 
@@ -28,44 +27,23 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative overflow-hidden">
-      {/* Decorative rotating asterisk */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[4%] top-[28%] hidden md:block select-none"
-      >
-        <span className="font-display block text-[200px] lg:text-[280px] leading-none text-ember/20 spin-slow">
-          ✱
-        </span>
-      </div>
-
-      <Marquee className="py-4 md:py-6 border-y border-ink/15">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <span
-            key={i}
-            className="font-display text-[30px] md:text-[72px] leading-none mx-5 md:mx-10 inline-flex items-center gap-4 md:gap-8 text-ink"
-          >
-            Let’s build
-            <span className="display-italic text-ember">something</span>
-            <span className="text-ink-3">✦</span>
-          </span>
-        ))}
-      </Marquee>
-
-      <div className="px-6 md:px-10 pt-20 pb-12">
-        <div className="flex items-center justify-between eyebrow text-ink-3">
+      <div className="px-6 md:px-10 pt-20 md:pt-28 pb-12">
+        <div className="flex items-center justify-between eyebrow">
           <span>(05) — Contact</span>
+          {profile.available && (
+            <span className="inline-flex items-center gap-2 text-signal">
+              <span className="live-dot" aria-hidden />
+              Available for work
+            </span>
+          )}
         </div>
         <div className="hair my-6" />
 
         <div className="grid grid-cols-12 gap-8 md:gap-10 mt-8">
           <div className="col-span-12 md:col-span-8">
-            <h2 className="font-display leading-[0.95] tracking-snug font-light">
-              <span className="block text-[clamp(44px,8vw,128px)] ">
-                  <span>Have a brief?</span>
-              </span>
-              <span className="block text-[clamp(44px,8vw,128px)] display-italic text-ember">
-                  <span>Send it.</span>
-              </span>
+            <h2 className="font-display text-display-lg font-medium text-ink">
+              <span className="block">Have a brief?</span>
+              <span className="block accent-word">Send it.</span>
             </h2>
 
             <FadeIn delay={0.2}>
@@ -78,7 +56,7 @@ export function Contact() {
                   border-b border-ink/40 pb-3 hover:border-ember transition-colors break-all text-left"
                   data-cursor="hover"
                 >
-                  <span className="display-italic">{profile.email}</span>
+                  <span className="emph">{profile.email}</span>
                   <span className="text-ember inline-flex translate-y-1 transition-transform duration-500 ease-out-expo group-hover:translate-x-2">
                     <AnimatePresence mode="wait" initial={false}>
                       {copied === 'email' ? (
@@ -133,7 +111,7 @@ export function Contact() {
 
           <aside className="col-span-12 md:col-span-3 md:col-start-10 space-y-6 self-end">
             <div>
-              <div className="eyebrow text-ink-3 mb-1">Find me on</div>
+              <div className="eyebrow mb-1">Find me on</div>
               <ul className="space-y-2">
                 {[
                   { label: 'GitHub', href: profile.github, external: true },
@@ -167,7 +145,7 @@ export function Contact() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="eyebrow text-ink-3 mb-1">Phone</div>
+              <div className="eyebrow mb-1">Phone</div>
               <div className="relative inline-block">
                 <button
                   type="button"
@@ -230,32 +208,24 @@ export function Contact() {
           </aside>
         </div>
 
-        {/* Quick facts row */}
-        <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-         
-        </div>
       </div>
 
-      {/* Bottom signature marquee */}
+      {/* Closing readout — mirrors the hero strip so the page opens and
+          shuts on the same machine voice. */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.2 }}
-        className="border-t border-ink/15"
+        transition={{ duration: 1 }}
+        className="border-t border-ink/15 mt-16 md:mt-24 px-6 md:px-10 py-4"
       >
-        <Marquee reverse className="py-4 pt-20">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span
-              key={i}
-              className="font-display text-[24px] md:text-[48px] leading-none mx-6 md:mx-10 inline-flex items-center gap-4 md:gap-8 text-ink-2"
-            >
-              Currently available
-              <span className="display-italic text-ember">— Q3 2026</span>
-              <span className="text-ink-3">✦</span>
-            </span>
-          ))}
-        </Marquee>
+        <div className="status-strip">
+          <span>Replies within a day</span>
+          <span className="sep">/</span>
+          <span>{profile.location} · UTC+3</span>
+          <span className="sep">/</span>
+          <span>Open to roles &amp; freelance</span>
+        </div>
       </motion.div>
     </section>
   )

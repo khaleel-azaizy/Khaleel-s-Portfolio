@@ -1,146 +1,82 @@
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { RevealLine } from './RevealText'
-import { Marquee } from './Marquee'
-import { projects, skills } from '../data/info'
-import { HeroDrawing } from './HeroDrawing'
-
-const ROLES = ['full-stack', 'data-driven', 'AI-integrated', 'production-grade']
+import { StackDiagram } from './StackDiagram'
+import { profile } from '../data/info'
 
 export function Hero() {
-  const [roleIdx, setRoleIdx] = useState(0)
-
-  useEffect(() => {
-    const id = setInterval(() => setRoleIdx((i) => (i + 1) % ROLES.length), 2400)
-    return () => clearInterval(id)
-  }, [])
+  // Scroll-linked drift only. The schematic previously leaned toward the
+  // cursor, which read as the diagram being nudged rather than as a diagram.
+  const { scrollY } = useScroll()
+  const drift = useTransform(scrollY, [0, 900], [0, -60])
 
   return (
-    <section
-      id="home"
-      className="relative min-h-[100svh] px-6 md:px-10 pt-32 md:pt-28 pb-0 flex flex-col"
-    >
-      {/* Hero sketch — centered on mobile, left-anchored on desktop */}
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.4, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center md:justify-start md:pl-[2%] select-none"
-      >
-        <HeroDrawing
-          className="text-ink/90 h-[95svh] sm:h-[95svh] md:h-[100svh] aspect-[210/297] max-w-[110%] sm:max-w-[90%] md:max-w-[50%]"
-        />
-      </motion.div>
-
-      {/* Text content — full width on mobile, middle-right column on desktop */}
-      <div className="relative z-10 flex flex-col flex-1 md:self-end md:w-[55%]">
-        {/* Eyebrow row */}
-        <div className="flex items-start justify-between text-ink-3 eyebrow gap-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.2 }}
-            className="flex items-center gap-3"
-          >
-            <span>(00)</span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="text-right max-w-[20ch] leading-relaxed"
-          >
-
-          </motion.div>
+    <section id="home" className="relative min-h-[100svh] flex flex-col">
+      {/* Name — full-bleed, the anchor of the whole page */}
+      <div className="hero-shell px-6 md:px-10 pt-24 md:pt-28">
+        <div className="flex items-center justify-between eyebrow">
+          <span>(00) — Index</span>
+          <span className="hidden sm:block">Software Engineer</span>
         </div>
 
-        {/* Headline */}
-        <div className="mt-16 md:mt-20">
-          <h1 className="font-display text-ink leading-[0.86] tracking-tightest">
-            <span className="block text-[clamp(56px,10vw,180px)] font-light">
-              <RevealLine delay={0.4}>Khaleel</RevealLine>
-            </span>
-            <span className="block text-[clamp(56px,10vw,180px)] font-light">
-              <RevealLine delay={0.55}>
-                <span>Azaizy</span>
-                <span className="display-italic text-ember">.</span>
-              </RevealLine>
-            </span>
-          </h1>
-        </div>
-
-        {/* Rotating tagline */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-auto md:mt-10 font-display text-2xl sm:text-3xl md:text-3xl lg:text-4xl tracking-snug leading-[1.15]"
-        >
-          <span className="text-ink-2">Engineer of</span>
-          <span className="relative inline-block align-baseline mx-2 md:mx-3 min-w-[7ch] md:min-w-[10ch]">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={ROLES[roleIdx]}
-                initial={{ y: '90%', opacity: 0 }}
-                animate={{ y: '0%', opacity: 1 }}
-                exit={{ y: '-90%', opacity: 0 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                className="display-italic text-ember inline-block"
-              >
-                {ROLES[roleIdx]}
-              </motion.span>
-            </AnimatePresence>
+        <h1 className="hero-name mt-8 md:mt-10 font-display text-display-xl font-semibold text-ink">
+          <span className="block">
+            <RevealLine delay={0.05}>Khaleel</RevealLine>
           </span>
-          <span className="text-ink-2">products,</span>
-          <br className="hidden sm:block" />
-          <span className="text-ink"> with a quiet bias for craft.</span>
-        </motion.div>
+          <span className="block">
+            <RevealLine delay={0.16}>
+              <span>Azaizy</span>
+              <span className="accent-word">.</span>
+            </RevealLine>
+          </span>
+        </h1>
       </div>
 
-     
-  
-      {/* Bottom keyword marquee — visual handoff to next section */}
+      {/* Statement, then the thing it describes */}
+      <div className="hero-band flex-1 px-6 md:px-10 mt-8 pb-6 md:pb-8 flex flex-col justify-end gap-7 md:gap-9">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="text-ink-2 text-base md:text-xl leading-[1.5] max-w-[46ch]"
+        >
+          I build full-stack products end to end — storefront, admin, API, and the
+          data layer under it.
+        </motion.p>
+
+        {/* Full-bleed so the three panels get room to breathe — side by side in
+            a half-width column they clipped their own labels. */}
+        <motion.figure className="m-0" style={{ y: drift }}>
+          <StackDiagram />
+          <figcaption className="mono text-[10px] tracking-[0.16em] uppercase text-ink-3 mt-3 border-t border-ink/15 pt-2">
+            Fig. 01 — What a shipped product looks like
+          </figcaption>
+        </motion.figure>
+      </div>
+
+      {/* Machine readout */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, delay: 1.8 }}
-        className="relative z-10 -mx-6 md:-mx-10 md:mt-auto pt-12 md:pt-0 border-t border-ink/20"
+        transition={{ duration: 1, delay: 0.9 }}
+        className="border-t border-ink/15 px-6 md:px-10 py-4"
       >
-        <Marquee className="py-1 ">
-          {[
-            'Full-Stack',
-            'Data Analytics',
-            'AI Integrations',
-            'Machine Learning',
-            'React · Angular',
-            'Python · Node',
-            'Firebase · SQL',
-            'NLP · Vision',
-            'Interface · Motion',
-          ].map((kw, i) => (
-            <span key={i} className="font-display text-2xl md:text-3xl mx-6 inline-flex items-center gap-6 text-ink-2">
-              {kw}
-              <span className="text-ember/80">✦</span>
+        <div className="status-strip">
+          {profile.available && (
+            <span className="inline-flex items-center gap-2 text-ink-2">
+              <span className="live-dot" aria-hidden />
+              Available for work
             </span>
-          ))}
-        </Marquee>
+          )}
+          <span className="sep">/</span>
+          <span>
+            <span className="val">2</span> products in production
+          </span>
+          <span className="sep">/</span>
+          <span>Full-stack · Data · AI</span>
+          <span className="sep">/</span>
+          <span>B.Sc SWE — Kinneret ’25</span>
+        </div>
       </motion.div>
-
     </section>
-  )
-}
-
-function Stat({ n, top }: { n: string; top: string }) {
-  return (
-    <div className="border-t border-ink/30 pt-3">
-      <div className="font-display text-4xl md:text-5xl lg:text-6xl leading-none tracking-snug">
-        {n}
-      </div>
-      <div className="mono text-[11px] text-ink-3 mt-2 uppercase tracking-wider">
-        {top}
-      </div>
-    </div>
   )
 }

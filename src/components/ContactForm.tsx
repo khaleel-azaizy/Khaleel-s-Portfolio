@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { profile } from '../data/info'
+import { getLenis } from '../hooks/useSmoothScroll'
 
 type Props = {
   open: boolean
@@ -10,22 +10,65 @@ type Props = {
 // Replace this with your Formspree form ID
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xrevqraa'
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 export function ContactForm({ open, onClose }: Props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const panelRef = useRef<HTMLDivElement>(null)
 
+  /* Escape to close, focus trapped inside the panel while open, and focus
+     handed back to whatever opened the dialog on close. */
   useEffect(() => {
     if (!open) return
+
+    const opener = document.activeElement as HTMLElement | null
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab') return
+
+      const panel = panelRef.current
+      if (!panel) return
+      const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE))
+      if (!items.length) return
+
+      const first = items[0]
+      const last = items[items.length - 1]
+      const activeEl = document.activeElement
+
+      if (e.shiftKey && (activeEl === first || !panel.contains(activeEl))) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && activeEl === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
+
     window.addEventListener('keydown', onKey)
+
+    // Lenis owns scrolling, so overflow:hidden alone would not stop it.
+    const lenis = getLenis()
+    lenis?.stop()
     document.body.style.overflow = 'hidden'
+
+    const raf = requestAnimationFrame(() => {
+      panelRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus()
+    })
+
     return () => {
+      cancelAnimationFrame(raf)
       window.removeEventListener('keydown', onKey)
+      lenis?.start()
       document.body.style.overflow = ''
+      opener?.focus?.()
     }
   }, [open, onClose])
 
@@ -76,6 +119,7 @@ export function ContactForm({ open, onClose }: Props) {
           className="fixed inset-0 z-[90] flex items-center justify-center px-4 md:px-10"
           aria-modal="true"
           role="dialog"
+          aria-labelledby="cf-title"
         >
           {/* Backdrop */}
           <motion.button
@@ -85,30 +129,35 @@ export function ContactForm({ open, onClose }: Props) {
             transition={{ duration: 0.3 }}
             onClick={onClose}
             aria-label="Close contact form"
-            className="absolute inset-0 bg-ink/70 backdrop-blur-sm cursor-pointer"
+            tabIndex={-1}
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm cursor-pointer"
           />
 
           {/* Panel */}
           <motion.div
+            ref={panelRef}
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl bg-paper text-ink border border-ink/15 shadow-2xl p-6 md:p-10"
+            className="relative w-full max-w-2xl bg-paper-2 text-ink border border-ink/15 shadow-2xl p-6 md:p-10"
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className="eyebrow text-ink-3">∗ Contact</div>
-                <h3 className="font-display text-3xl md:text-5xl leading-[1.05] tracking-snug font-light mt-2">
+                <div className="eyebrow">Contact</div>
+                <h3
+                  id="cf-title"
+                  className="font-display text-3xl md:text-5xl leading-[1.05] tracking-snug font-medium mt-2"
+                >
                   {status === 'success' ? (
                     <>
                       Message
-                      <span className="display-italic text-ember"> sent.</span>
+                      <span className="accent-word"> sent.</span>
                     </>
                   ) : (
                     <>
                       Send a
-                      <span className="display-italic text-ember"> brief.</span>
+                      <span className="accent-word"> brief.</span>
                     </>
                   )}
                 </h3>
@@ -165,7 +214,7 @@ export function ContactForm({ open, onClose }: Props) {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       disabled={status === 'submitting'}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
                       placeholder="Jane Doe"
                     />
                   </Field>
@@ -179,7 +228,7 @@ export function ContactForm({ open, onClose }: Props) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={status === 'submitting'}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember font-display text-xl md:text-2xl py-2 transition-colors disabled:opacity-50"
                       placeholder="jane@studio.com"
                     />
                   </Field>
@@ -193,13 +242,13 @@ export function ContactForm({ open, onClose }: Props) {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       disabled={status === 'submitting'}
-                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember outline-none font-display text-lg md:text-xl py-2 resize-none transition-colors disabled:opacity-50"
+                      className="w-full bg-transparent border-b border-ink/30 focus:border-ember font-display text-lg md:text-xl py-2 resize-none transition-colors disabled:opacity-50"
                       placeholder="What are you building?"
                     />
                   </Field>
 
                   {status === 'error' && (
-                    <p className="text-red-500 font-display text-lg">
+                    <p className="text-alert font-display text-lg">
                       Oops! There was a problem submitting your form. Please try again.
                     </p>
                   )}
@@ -243,7 +292,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="eyebrow text-ink-3 block mb-2">
+      <label htmlFor={htmlFor} className="eyebrow block mb-2">
         {label}
       </label>
       {children}

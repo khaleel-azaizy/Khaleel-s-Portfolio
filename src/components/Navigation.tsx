@@ -1,42 +1,33 @@
-import { useEffect, useState } from 'react'
-import { sections } from '../data/info'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useTransform } from 'framer-motion'
+import { sections, type SectionId } from '../data/info'
 import { Clock } from './Clock'
-import { getLenis } from '../hooks/useSmoothScroll'
+import { getLenis, onLenisScroll } from '../hooks/useSmoothScroll'
+import { useScrollVelocity } from '../hooks/useScrollVelocity'
 
-function scrollToSection(id: string) {
-  const target = document.getElementById(id)
-  if (!target) return
+type StageMetrics = { id: string; top: number; height: number }
 
-  const stages = Array.from(
-    document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow')
-  )
-  const idx = stages.findIndex((s) => s.contains(target))
-  if (idx < 0) return
-
-  // Sum the rendered heights of every preceding Stage. offsetHeight is
-  // independent of sticky pinning, so this stays correct even when earlier
-  // sections are currently pinned at top:0.
+/** Document-space top of an element. Uses the offsetParent chain because
+ *  getBoundingClientRect() lies about sticky-pinned stages. */
+function documentTop(el: HTMLElement) {
   let top = 0
-  for (let i = 0; i < idx; i++) top += stages[i].offsetHeight
-
-  // Add the offset of the Stages' parent container (the <main> element).
-  const container = stages[0]?.parentElement
-  if (container) {
-    top += container.getBoundingClientRect().top + window.scrollY
+  let node: HTMLElement | null = el
+  while (node) {
+    top += node.offsetTop
+    node = node.offsetParent as HTMLElement | null
   }
+  return top
+}
 
-  const lenis = getLenis()
-  if (lenis) {
-    lenis.scrollTo(top, {
-      duration: 1.2,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      lock: true,
-      force: true,
-      immediate: false,
+function readStages(): StageMetrics[] {
+  return Array.from(document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow'))
+    .map((stage) => {
+      const section = stage.querySelector<HTMLElement>('section[id]')
+      return section
+        ? { id: section.id, top: documentTop(stage), height: stage.offsetHeight }
+        : null
     })
-  } else {
-    window.scrollTo({ top, behavior: 'smooth' })
-  }
+    .filter((s): s is StageMetrics => s !== null)
 }
 
 type NavigationProps = {
@@ -44,81 +35,111 @@ type NavigationProps = {
 }
 
 export function Navigation({ onContactClick }: NavigationProps) {
-  const [active, setActive] = useState<string>('home')
-  const [onDark, setOnDark] = useState<boolean>(false)
+  const [active, setActive] = useState<SectionId>('home')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const stagesRef = useRef<StageMetrics[]>([])
+  const velocity = useScrollVelocity()
 
+  // Active dash stretches with scroll speed.
+  const dashWidth = useTransform(velocity, (v) => 24 + Math.abs(v) * 18)
+
+  /* Stage geometry is cached and only re-measured on layout change. The
+     previous implementation re-queried the DOM and read offsetHeight on every
+     scroll event, which under Lenis means a full layout pass every frame. */
   useEffect(() => {
-    const compute = () => {
-      const stages = Array.from(
-        document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow')
-      )
-      if (!stages.length) return
-      const container = stages[0].parentElement
-      if (!container) return
-
-      const containerY = container.getBoundingClientRect().top + window.scrollY
-      const trigger = window.scrollY + window.innerHeight * 0.4
-
-      let activeIdx = 0
-      let runY = containerY
-      for (let i = 0; i < stages.length; i++) {
-        if (runY <= trigger) activeIdx = i
-        runY += stages[i].offsetHeight
-      }
-
-      const stage = stages[activeIdx]
-      const sectionEl = stage.querySelector<HTMLElement>('section[id]')
-      if (sectionEl) {
-        setActive(sectionEl.id)
-        setOnDark(stage.classList.contains('theme-dark'))
-      }
+    const measure = () => {
+      stagesRef.current = readStages()
+      resolveActive(window.scrollY)
     }
 
-    compute()
-    window.addEventListener('scroll', compute, { passive: true })
-    window.addEventListener('resize', compute)
+    const resolveActive = (scroll: number) => {
+      const stages = stagesRef.current
+      if (!stages.length) return
+
+      const trigger = scroll + window.innerHeight * 0.4
+      let current = stages[0]
+      for (const stage of stages) {
+        if (stage.top <= trigger) current = stage
+      }
+      setActive(current.id as SectionId)
+    }
+
+    measure()
+    const unsubscribe = onLenisScroll(({ scroll }) => resolveActive(scroll))
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    window.addEventListener('resize', measure)
+
     return () => {
-      window.removeEventListener('scroll', compute)
-      window.removeEventListener('resize', compute)
+      unsubscribe()
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
     }
   }, [])
 
-  // colors that survive both light + dark stages
-  const navText = onDark ? 'text-paper/75' : 'text-ink-3'
-  const navAccent = onDark ? 'text-paper hover:text-paper' : 'text-ink hover:text-ink'
-  const navDim = onDark ? 'text-paper/55' : 'text-ink-3'
+  const scrollToSection = useCallback((id: SectionId) => {
+    const stages = stagesRef.current.length ? stagesRef.current : readStages()
+    const target = stages.find((s) => s.id === id)
+    if (!target) return
+
+    const lenis = getLenis()
+    // Keep the URL in step so deep links and the back button work.
+    const settle = () => history.replaceState(null, '', `#${id}`)
+
+    if (lenis) {
+      lenis.scrollTo(target.top, {
+        duration: 1.2,
+        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        lock: true,
+        force: true,
+        immediate: false,
+        onComplete: settle,
+      })
+    } else {
+      window.scrollTo({ top: target.top, behavior: 'smooth' })
+      settle()
+    }
+  }, [])
+
+  // Honour a hash on first load, once stages have been measured.
+  useEffect(() => {
+    const id = window.location.hash.slice(1) as SectionId
+    if (!id || !sections.some((s) => s.id === id)) return
+    const raf = requestAnimationFrame(() => scrollToSection(id))
+    return () => cancelAnimationFrame(raf)
+  }, [scrollToSection])
+
+  const activeSection = sections.find((s) => s.id === active) ?? sections[0]
 
   return (
     <>
       {/* Top bar */}
-      <header className={`fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-5 flex items-center justify-between pointer-events-none transition-colors duration-500 ${navText}`}>
+      <header className="fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-5 flex items-center justify-between pointer-events-none text-ink-3">
         <div className="pointer-events-auto flex items-center gap-3">
           <span className="pulse-dot" aria-hidden />
-          <button
-            onClick={onContactClick}
-            className="cta-pill"
-            data-cursor="hover"
-          >
+          <button onClick={onContactClick} className="cta-pill" data-cursor="hover">
             Contact me
             <span className="cta-arrow" aria-hidden>↗</span>
           </button>
         </div>
+
         <a
           href="#home"
           onClick={(e) => { e.preventDefault(); scrollToSection('home') }}
-          className={`pointer-events-auto eyebrow tracking-wider transition-colors ${navAccent}`}
-          style={{ color: 'inherit' }}
+          className="pointer-events-auto eyebrow tracking-wider text-ink hover:text-ember transition-colors"
         >
-          KHALEEL. AZAIZY 
+          Khaleel. Azaizy
         </a>
-        <div className="pointer-events-auto eyebrow text-right hidden md:block" style={{ color: 'inherit' }}>
-          <Clock /> <span className={navDim}>UTC+3</span>
+
+        <div className="pointer-events-auto eyebrow text-right hidden md:block">
+          <Clock /> <span className="text-ink-3">UTC+3</span>
         </div>
       </header>
 
-      {/* Right rail nav */}
+      {/* Desktop rail */}
       <nav
-        className={`fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col gap-3 transition-colors duration-500 ${navText}`}
+        className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col gap-3 text-ink-3"
         aria-label="Section navigation"
       >
         {sections.map((s) => {
@@ -128,27 +149,85 @@ export function Navigation({ onContactClick }: NavigationProps) {
               key={s.id}
               href={`#${s.id}`}
               onClick={(e) => { e.preventDefault(); scrollToSection(s.id) }}
+              aria-current={isActive ? 'true' : undefined}
               className="group flex items-center justify-end gap-3 eyebrow"
-              style={{ color: 'inherit' }}
             >
               <span
                 className={`transition-all duration-500 ${
-                  isActive ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 group-hover:opacity-80 group-hover:translate-x-0'
+                  isActive
+                    ? 'opacity-100 translate-x-0 text-ink'
+                    : 'opacity-0 translate-x-2 group-hover:opacity-80 group-hover:translate-x-0'
                 }`}
               >
                 {s.label}
               </span>
-              <span className="relative inline-block">
-                <span
-                  className={`block transition-all duration-500 ${
-                    isActive ? 'w-6 bg-ember' : `w-3 ${onDark ? 'bg-paper/60' : 'bg-ink-3'} group-hover:w-5`
-                  } h-px`}
-                />
-              </span>
+              {isActive ? (
+                <motion.span className="block h-px bg-ember" style={{ width: dashWidth }} />
+              ) : (
+                <span className="block h-px w-3 bg-ink-3 transition-all duration-500 group-hover:w-5" />
+              )}
             </a>
           )
         })}
       </nav>
+
+      {/* Mobile section nav — reads as instrument chrome rather than a
+          hamburger, and reuses the same active-section state as the rail. */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-[76]">
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.ul
+              id="mobile-sections"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-paper-2/95 backdrop-blur-md border-t border-ink/15 px-6 py-2"
+            >
+              {sections.map((s) => (
+                <li key={s.id}>
+                  <a
+                    href={`#${s.id}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setMenuOpen(false)
+                      scrollToSection(s.id)
+                    }}
+                    aria-current={active === s.id ? 'true' : undefined}
+                    className={`flex items-center gap-4 py-3 border-b border-ink/10 last:border-b-0 eyebrow ${
+                      active === s.id ? 'text-ember' : 'text-ink-2'
+                    }`}
+                  >
+                    <span className="tabular-nums">{s.index}</span>
+                    <span className="font-display text-xl tracking-snug normal-case">
+                      {s.label}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-sections"
+          className="w-full flex items-center justify-between gap-4 px-6 py-4 bg-paper-2/95 backdrop-blur-md border-t border-ink/15 eyebrow text-ink-2"
+        >
+          <span className="flex items-center gap-3">
+            <span className="tabular-nums text-ember">{activeSection.index}</span>
+            <span>{activeSection.label}</span>
+          </span>
+          <span
+            aria-hidden
+            className={`transition-transform duration-500 ease-out-expo ${menuOpen ? 'rotate-180' : ''}`}
+          >
+            ▲
+          </span>
+        </button>
+      </div>
     </>
   )
 }

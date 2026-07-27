@@ -5,9 +5,9 @@ export function Footer() {
   return (
     <footer className="relative border-t border-ink/20 px-6 md:px-10 py-10">
       {/* Massive last word */}
-      <div className="mb-12 select-none">
-        <div className="font-display text-[clamp(120px,32vw,520px)] leading-[0.78] tracking-tightest font-light text-ink">
-          AZ<span className="display-italic text-ember">.</span>
+      <div className="mb-12 select-none overflow-hidden">
+        <div className="font-display text-[clamp(120px,46vw,780px)] leading-[0.78] tracking-tightest font-semibold text-ink">
+          AZ<span className="accent-word">.</span>
         </div>
       </div>
 

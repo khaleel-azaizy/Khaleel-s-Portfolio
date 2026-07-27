@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react'
 
+/* Khaleel's local time, not the visitor's — the label next to this reads
+   "UTC+3", so reading the visitor's clock would have shown the wrong number
+   to everyone outside Israel. */
+const fmt = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Jerusalem',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+})
+
 export function Clock() {
-  const [time, setTime] = useState(() => fmt(new Date()))
+  const [time, setTime] = useState(() => fmt.format(new Date()))
+
   useEffect(() => {
-    const id = setInterval(() => setTime(fmt(new Date())), 1000)
+    const id = setInterval(() => setTime(fmt.format(new Date())), 1000)
     return () => clearInterval(id)
   }, [])
-  return <span className="mono tabular-nums">{time}</span>
-}
 
-function fmt(d: Date) {
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mm = String(d.getMinutes()).padStart(2, '0')
-  const ss = String(d.getSeconds()).padStart(2, '0')
-  return `${hh}:${mm}:${ss}`
+  return <span className="mono tabular-nums">{time}</span>
 }

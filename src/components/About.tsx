@@ -5,9 +5,9 @@ export function About() {
   return (
     <section id="about" className="relative">
       <div className="px-6 md:px-10 pt-24 md:pt-32">
-        <div className="flex items-center justify-between eyebrow text-ink-3">
+        <div className="flex items-center justify-between eyebrow">
           <span>(01) — About</span>
-          <span className="mono">∗ Bio</span>
+          <span className="mono">Bio</span>
         </div>
         <div className="hair my-6" />
       </div>
@@ -16,13 +16,13 @@ export function About() {
         {/* Lede */}
         <div className="md:col-span-8">
           <FadeIn>
-            <p className="font-display text-[clamp(28px,3.6vw,52px)] leading-[1.12] tracking-snug font-light">
+            <p className="font-display text-display-md font-normal">
               Software engineer building
-              <span className="display-italic text-ember"> full-stack </span>
-              products end-to-end, with
-              <span className="display-italic"> data </span>
+              <span className="accent-word"> full-stack </span>
+              products end to end, with
+              <span className="emph"> data </span>
               and
-              <span className="display-italic text-ember"> AI </span>
+              <span className="accent-word"> AI </span>
               where it earns its place.
             </p>
           </FadeIn>
@@ -44,8 +44,8 @@ function Fact({ label, value }: { label: string; value: string }) {
   return (
     <FadeIn delay={0.1} y={12}>
       <div>
-        <div className="eyebrow text-ink-3 mb-1">{label}</div>
-        <div className="font-display text-2xl tracking-snug">{value}</div>
+        <div className="eyebrow mb-1">{label}</div>
+        <div className="font-display text-2xl tracking-snug text-ink">{value}</div>
       </div>
     </FadeIn>
   )
