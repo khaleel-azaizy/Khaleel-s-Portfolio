@@ -17,7 +17,9 @@ import { ContactForm } from './components/ContactForm'
 
 type StageProps = {
   children: React.ReactNode
-  raised?: boolean
+  /** Section ground. Each stage restates the paper ramp; everything inside it
+   *  reads from those tokens, so the whole section follows. */
+  tone: string
   z: number
   flow?: boolean
 }
@@ -28,7 +30,7 @@ type StageProps = {
  *  - flow:    relative — keeps z-stacking so it still rises over the previous
  *    sticky section, but allows tall content to scroll naturally. Flow stages
  *    are never covered, so they get no recede treatment.                     */
-function Stage({ children, raised = false, z, flow = false }: StageProps) {
+function Stage({ children, tone, z, flow = false }: StageProps) {
   const ref = useRef<HTMLDivElement>(null)
   const progress = useStageProgress(ref, !flow)
 
@@ -40,7 +42,7 @@ function Stage({ children, raised = false, z, flow = false }: StageProps) {
   return (
     <div
       ref={ref}
-      className={`${flow ? 'stack-flow' : 'stack-section'} ${raised ? 'stage-raised' : ''}`}
+      className={`${flow ? 'stack-flow' : 'stack-section'} ${tone}`}
       style={{ zIndex: z }}
     >
       {flow ? (
@@ -59,12 +61,12 @@ function ScrollProgress() {
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, { stiffness: 320, damping: 40, mass: 0.3 })
 
+  // The track gives the bar its own ground, so a crimson fill still reads while
+  // the crimson section is pinned underneath it.
   return (
-    <motion.div
-      aria-hidden
-      className="fixed top-0 left-0 right-0 h-[2px] bg-ember origin-left z-[78]"
-      style={{ scaleX }}
-    />
+    <div aria-hidden className="fixed top-0 left-0 right-0 h-[2px] z-[78] bg-paper/60">
+      <motion.div className="h-full bg-ember origin-left" style={{ scaleX }} />
+    </div>
   )
 }
 
@@ -83,13 +85,14 @@ export default function App() {
       <Navigation onContactClick={() => setContactOpen(true)} />
 
       <main id="main" className="relative">
-        <Stage z={10}><Hero /></Stage>
-        <Stage z={20} raised><About /></Stage>
-        <Stage z={30} flow><Projects /></Stage>
+        <Stage z={10} tone="stage-tint-0"><Hero /></Stage>
+        <Stage z={20} tone="stage-tint-1"><About /></Stage>
+        <Stage z={30} tone="stage-tint-2" flow><Projects /></Stage>
         {/* Skills is tall enough to overflow a pinned viewport on phones. */}
-        <Stage z={40} raised flow={isMobile}><Skills /></Stage>
-        <Stage z={50}><Education /></Stage>
-        <Stage z={60} raised><Contact /></Stage>
+        <Stage z={40} tone="stage-tint-3" flow={isMobile}><Skills /></Stage>
+        <Stage z={50} tone="stage-tint-4"><Education /></Stage>
+        {/* The one inversion — crimson ground where the ask lands. */}
+        <Stage z={60} tone="stage-invert"><Contact /></Stage>
       </main>
 
       <Footer />

@@ -1,82 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion, useTransform } from 'framer-motion'
 import { sections, type SectionId } from '../data/info'
 import { Clock } from './Clock'
-import { getLenis, onLenisScroll } from '../hooks/useSmoothScroll'
+import { getLenis } from '../hooks/useSmoothScroll'
 import { useScrollVelocity } from '../hooks/useScrollVelocity'
-
-type StageMetrics = { id: string; top: number; height: number }
-
-/** Document-space top of an element. Uses the offsetParent chain because
- *  getBoundingClientRect() lies about sticky-pinned stages. */
-function documentTop(el: HTMLElement) {
-  let top = 0
-  let node: HTMLElement | null = el
-  while (node) {
-    top += node.offsetTop
-    node = node.offsetParent as HTMLElement | null
-  }
-  return top
-}
-
-function readStages(): StageMetrics[] {
-  return Array.from(document.querySelectorAll<HTMLElement>('.stack-section, .stack-flow'))
-    .map((stage) => {
-      const section = stage.querySelector<HTMLElement>('section[id]')
-      return section
-        ? { id: section.id, top: documentTop(stage), height: stage.offsetHeight }
-        : null
-    })
-    .filter((s): s is StageMetrics => s !== null)
-}
+import { readStages, useActiveStage } from '../hooks/useActiveStage'
 
 type NavigationProps = {
   onContactClick: () => void
 }
 
 export function Navigation({ onContactClick }: NavigationProps) {
-  const [active, setActive] = useState<SectionId>('home')
+  const { active, stagesRef } = useActiveStage()
   const [menuOpen, setMenuOpen] = useState(false)
-  const stagesRef = useRef<StageMetrics[]>([])
   const velocity = useScrollVelocity()
 
   // Active dash stretches with scroll speed.
   const dashWidth = useTransform(velocity, (v) => 24 + Math.abs(v) * 18)
-
-  /* Stage geometry is cached and only re-measured on layout change. The
-     previous implementation re-queried the DOM and read offsetHeight on every
-     scroll event, which under Lenis means a full layout pass every frame. */
-  useEffect(() => {
-    const measure = () => {
-      stagesRef.current = readStages()
-      resolveActive(window.scrollY)
-    }
-
-    const resolveActive = (scroll: number) => {
-      const stages = stagesRef.current
-      if (!stages.length) return
-
-      const trigger = scroll + window.innerHeight * 0.4
-      let current = stages[0]
-      for (const stage of stages) {
-        if (stage.top <= trigger) current = stage
-      }
-      setActive(current.id as SectionId)
-    }
-
-    measure()
-    const unsubscribe = onLenisScroll(({ scroll }) => resolveActive(scroll))
-
-    const ro = new ResizeObserver(measure)
-    ro.observe(document.body)
-    window.addEventListener('resize', measure)
-
-    return () => {
-      unsubscribe()
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
 
   const scrollToSection = useCallback((id: SectionId) => {
     const stages = stagesRef.current.length ? stagesRef.current : readStages()
@@ -115,8 +55,8 @@ export function Navigation({ onContactClick }: NavigationProps) {
   return (
     <>
       {/* Top bar */}
-      <header className="fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-5 flex items-center justify-between pointer-events-none text-ink-3">
-        <div className="pointer-events-auto flex items-center gap-3">
+      <header className="fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-4 flex items-center justify-between pointer-events-none text-ink-3">
+        <div className="chrome-pill pointer-events-auto flex items-center gap-3">
           <span className="pulse-dot" aria-hidden />
           <button onClick={onContactClick} className="cta-pill" data-cursor="hover">
             Contact me
@@ -127,19 +67,19 @@ export function Navigation({ onContactClick }: NavigationProps) {
         <a
           href="#home"
           onClick={(e) => { e.preventDefault(); scrollToSection('home') }}
-          className="pointer-events-auto eyebrow tracking-wider text-ink hover:text-ember transition-colors"
+          className="chrome-pill pointer-events-auto eyebrow tracking-wider text-ink hover:text-ember transition-colors"
         >
           Khaleel. Azaizy
         </a>
 
-        <div className="pointer-events-auto eyebrow text-right hidden md:block">
+        <div className="chrome-pill pointer-events-auto eyebrow text-right hidden md:block">
           <Clock /> <span className="text-ink-3">UTC+3</span>
         </div>
       </header>
 
       {/* Desktop rail */}
       <nav
-        className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col gap-3 text-ink-3"
+        className="rail-shell fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col gap-3 text-ink-3"
         aria-label="Section navigation"
       >
         {sections.map((s) => {

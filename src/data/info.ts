@@ -32,11 +32,12 @@ export type Project = {
   description: string
   tags: string[]
   icon: IconType
-  /** Accents are tuned for the near-black ground: saturated and luminous,
-   *  used as a radial wash and a rule. Amber belongs to the flagship. */
+  /** Accents are tuned for the chalk ground: dark, saturated hues that
+   *  hold up both as a 16% radial wash and as a 2px rule. None may sit in
+   *  the crimson band, where they would compete with the accent. */
   accent: string
   tier: ProjectTier
-  /** Deployed and serving real traffic. Drives the cyan LIVE chip. */
+  /** Deployed and serving real traffic. Drives the teal LIVE chip. */
   live?: boolean
   links: { label: string; url: string }[]
 }
@@ -51,7 +52,7 @@ export const projects: Project[] = [
       'A dual-application rental platform — customer storefront and admin dashboard — with multilingual support, real-time booking flow, and Firebase-backed inventory.',
     tags: ['React', 'Vite', 'Firebase', 'PWA', 'i18n'],
     icon: FaCar,
-    accent: '#EA4429',
+    accent: '#B0102F',
     tier: 'feature',
     live: true,
     links: [{ label: 'Visit Site', url: 'https://aj-motors.site/' }],
@@ -65,7 +66,7 @@ export const projects: Project[] = [
     'A dual-application baby clothing store — customer storefront and admin dashboard — with multilingual support, cart and checkout flow, order tracking with estimated delivery, and Firebase-backed product, image, and inventory management.',
   tags: ['React', 'Vite', 'Firebase', 'Three.js', 'i18n'],
   icon: FaBaby,
-  accent: '#E8639B',
+  accent: '#A8346B',
   tier: 'feature',
   live: true,
   links: [{ label: 'Visit Site', url: 'https://baby-fashion.site/' }],
@@ -79,7 +80,7 @@ export const projects: Project[] = [
       'Habit tracking with yearly and monthly calendar grids, streak analytics, and offline-first sync. Installable on mobile and desktop.',
     tags: ['React', 'Vite', 'Firebase', 'PWA'],
     icon: FaMobileAlt,
-    accent: '#38C6A0',
+    accent: '#1B6E58',
     tier: 'selected',
     links: [{ label: 'Source', url: 'https://github.com/khaleel-azaizy/Daily-Habit-Tracker' }],
   },
@@ -92,7 +93,7 @@ export const projects: Project[] = [
       'A travelers’ social network with interactive maps, geotagged photo galleries, and a SQL-backed Express API.',
     tags: ['Angular', 'Express', 'SQL', 'Leaflet.js'],
     icon: FaGlobe,
-    accent: '#8B7CF6',
+    accent: '#4A3A9E',
     tier: 'selected',
     links: [
       { label: 'Frontend', url: 'https://github.com/khaleel-azaizy/webDevelopment_Travel-Diary' },
@@ -108,7 +109,7 @@ export const projects: Project[] = [
       'A PyTorch ANN reaching 85% accuracy on income-bracket prediction from US Census data. Includes feature engineering and training notebook.',
     tags: ['Python', 'PyTorch', 'Pandas', 'Scikit-learn'],
     icon: FaBrain,
-    accent: '#4F9CF0',
+    accent: '#1F5C99',
     tier: 'selected',
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1iGGvt2jLmkD2pvvzmB9UGclbOle-PbnY' }],
   },
@@ -121,7 +122,7 @@ export const projects: Project[] = [
       'Simulated patient vitals streamed in real time with anomaly detection, visualizations, and threshold-based alerting.',
     tags: ['Python', 'Matplotlib', 'IoT'],
     icon: FaHeartbeat,
-    accent: '#FF8A3D',
+    accent: '#A33A1E',
     tier: 'index',
     links: [{ label: 'Notebook', url: 'https://colab.research.google.com/drive/1ysOhiV-WObB7A5XS57omxPijnWvrYH1n' }],
   },
@@ -134,7 +135,7 @@ export const projects: Project[] = [
       'Java client–server file transfer over both TCP and UDP with throughput and reliability comparisons.',
     tags: ['Java', 'TCP', 'UDP', 'Networking'],
     icon: FaPlug,
-    accent: '#2FB3A8',
+    accent: '#146660',
     tier: 'index',
     links: [],
   },
@@ -147,7 +148,7 @@ export const projects: Project[] = [
       'A working notebook of supervised and unsupervised algorithms — regression, clustering, dimensionality reduction — built up across coursework.',
     tags: ['Python', 'Scikit-learn', 'NumPy', 'Jupyter'],
     icon: FaFlask,
-    accent: '#C0A15E',
+    accent: '#7A5A14',
     tier: 'index',
     links: [],
   },
@@ -160,7 +161,7 @@ export const projects: Project[] = [
       'Text classification and sentiment analysis built on transformer architectures. Evaluation pipeline included.',
     tags: ['Python', 'Transformers', 'PyTorch', 'NLP'],
     icon: FaComments,
-    accent: '#6FCF5C',
+    accent: '#5E3A8C',
     tier: 'index',
     links: [],
   },

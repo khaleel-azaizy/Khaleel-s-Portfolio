@@ -1,16 +1,14 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { RevealLine } from './RevealText'
-import { StackDiagram } from './StackDiagram'
+import { HeroFigure } from './HeroFigure'
 import { profile } from '../data/info'
 
 export function Hero() {
-  // Scroll-linked drift only. The schematic previously leaned toward the
-  // cursor, which read as the diagram being nudged rather than as a diagram.
   const { scrollY } = useScroll()
   const drift = useTransform(scrollY, [0, 900], [0, -60])
 
   return (
-    <section id="home" className="relative min-h-[100svh] flex flex-col">
+    <section id="home" className="hero-section relative min-h-[100svh] flex flex-col">
       {/* Name — full-bleed, the anchor of the whole page */}
       <div className="hero-shell px-6 md:px-10 pt-24 md:pt-28">
         <div className="flex items-center justify-between eyebrow">
@@ -31,25 +29,40 @@ export function Hero() {
         </h1>
       </div>
 
-      {/* Statement, then the thing it describes */}
-      <div className="hero-band flex-1 px-6 md:px-10 mt-8 pb-6 md:pb-8 flex flex-col justify-end gap-7 md:gap-9">
+      {/* Statement beside the figure, copy holding the left edge.
+
+          The figure is sized by height rather than width: the hero has a fixed
+          vertical budget, and the artwork is roughly square (632x545 after
+          cropping the exported frame's dead space), so driving it from a width
+          would overshoot the budget on desktop and swallow the fold on phones. */}
+      {/* justify-end is "bottom" while this is a column and "right" once it is a
+          row, so the row case is stated separately — otherwise the copy loses
+          the left gutter. */}
+      <div className="hero-band flex-1 px-6 md:px-10 mt-8 pb-4 md:pb-0 flex flex-col md:flex-row md:items-end justify-end md:justify-between gap-6 md:gap-10">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="text-ink-2 text-base md:text-xl leading-[1.5] max-w-[46ch]"
+          className="order-2 md:order-none text-ink-2 text-base md:text-xl leading-[1.5] max-w-[46ch] md:flex-1 md:pb-2"
         >
           I build full-stack products end to end — storefront, admin, API, and the
           data layer under it.
         </motion.p>
 
-        {/* Full-bleed so the three panels get room to breathe — side by side in
-            a half-width column they clipped their own labels. */}
-        <motion.figure className="m-0" style={{ y: drift }}>
-          <StackDiagram />
-          <figcaption className="mono text-[10px] tracking-[0.16em] uppercase text-ink-3 mt-3 border-t border-ink/15 pt-2">
-            Fig. 01 — What a shipped product looks like
-          </figcaption>
+        {/* Bleeds through the page gutter on the right, so the drawing runs to
+            the edge instead of sitting inside the text column. The widths add
+            back the gutter the negative margin eats.
+
+            order-1: stacked on phones the drawing leads and the statement sits
+            under it; DOM order stays copy-first so a screen reader still gets
+            the sentence before the decorative art. */}
+        <motion.figure
+          className="order-1 md:order-none m-0 shrink-0 self-start md:self-end -mr-6 md:-mr-10 w-[calc(100%+1.5rem)] md:w-[calc(46%+2.5rem)] lg:w-auto"
+          style={{ y: drift }}
+        >
+          {/* Width/height come from .hero-figure — which axis drives depends on
+              the breakpoint, so only the ratio is set here. */}
+          <HeroFigure className="aspect-[632/545]" />
         </motion.figure>
       </div>
 

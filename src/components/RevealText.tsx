@@ -8,13 +8,24 @@ type Props = {
   duration?: number
 }
 
+/**
+ * A line that slides up from behind its own top edge.
+ *
+ * Animates on mount rather than `whileInView`, and that is load-bearing: the
+ * line starts translated fully outside `.reveal-line`, whose `overflow: hidden`
+ * clips it away. IntersectionObserver — which is what `whileInView` uses —
+ * intersects against ancestor clips, so a fully clipped element never reports
+ * as visible, never triggers, and stays hidden permanently. The reveal
+ * deadlocked itself and the hero rendered with no name at all.
+ *
+ * This is only ever used above the fold, so mount is the right trigger anyway.
+ */
 export function RevealLine({ children, delay = 0, className = '', duration = 0.9 }: Props) {
   return (
     <span className="reveal-line">
       <motion.span
-        initial={{ y: '110%' }}
-        whileInView={{ y: '0%' }}
-        viewport={{ once: true, margin: '-10%' }}
+        initial={{ y: '130%' }}
+        animate={{ y: '0%' }}
         transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
         className={className}
       >
