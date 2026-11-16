@@ -4,7 +4,7 @@
 
 **Software Engineer** · Full-Stack · AI · Data
 
-[![Live Site](https://img.shields.io/badge/🌐_Live-my--portfolio--c83e2.web.app-dd4423?style=for-the-badge)](https://my-portfolio-c83e2.web.app)
+[![Live Site](https://img.shields.io/badge/🌐_Live-my--portfolio--c83e2.web.app-7654a3?style=for-the-badge)](https://my-portfolio-c83e2.web.app)
 [![GitHub](https://img.shields.io/badge/GitHub-khaleel--azaizy-181717?style=for-the-badge&logo=github)](https://github.com/khaleel-azaizy)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-khaleel--azaizy-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/khaleel-azaizy)
 
@@ -14,7 +14,7 @@
 
 <br/><br/>
 
-A modern, animated developer portfolio built with **React**, **TypeScript**, and **Vite** — featuring smooth scroll-driven animations, dynamic stacking sections, and a custom cursor.
+A fast, accessible developer portfolio built with **React**, **TypeScript**, and **Vite** — live product previews, a filterable project workbench, and a contact form that lands straight in my inbox.
 
 </div>
 
@@ -24,23 +24,23 @@ A modern, animated developer portfolio built with **React**, **TypeScript**, and
 
 | Feature | Description |
 |---|---|
-| 🎭 **Intro Animation** | Full-screen cinematic intro with animated reveal |
-| 🖱️ **Custom Cursor** | Reactive cursor that responds to interactive elements |
-| 📜 **Smooth Scrolling** | Lenis-powered buttery smooth scroll experience |
-| 🃏 **Stacking Sections** | Scroll-driven sticky/flow sections that stack over each other |
-| ✨ **Framer Motion** | Page-wide entrance animations and micro-interactions |
-| 🌗 **Light/Dark Stages** | Alternating themed sections for visual rhythm |
-| 📱 **Fully Responsive** | Optimized for every screen size |
-| 📊 **Firebase Analytics** | Integrated Google Analytics tracking |
+| 🖥️ **Live product previews** | Featured client projects shown in browser frames with links to the live sites |
+| 🗂️ **Filterable workbench** | Smaller projects filterable by Web apps, AI & data, and Systems |
+| 🪟 **Project details** | Each project opens in an accessible `<dialog>` with features and links |
+| ✉️ **Contact form** | Formspree-backed form with timeout, error, and success states |
+| ♿ **Accessible by default** | Skip link, focus management, `aria-pressed` filters, reduced-motion support |
+| 📱 **Fully responsive** | Tuned layouts from phones to wide desktops |
+| 🔗 **Share-ready** | Open Graph / Twitter card image, canonical URL, sitemap, and JSON-LD |
+| 📊 **Deferred analytics** | Firebase Analytics loads in its own chunk after the page has loaded, in production only |
 
 ## 🏗️ Tech Stack
 
 ```
 Frontend        React 18  ·  TypeScript  ·  Vite 6
 Styling         Tailwind CSS 3  ·  Custom CSS
-Animation       Framer Motion  ·  Lenis Smooth Scroll
-Icons           React Icons (FA, SI, VSC)
-Fonts           Fraunces  ·  Geist  ·  JetBrains Mono
+Icons           React Icons (Feather, FA, SI, VSC)
+Fonts           Bricolage Grotesque  ·  DM Sans
+Forms           Formspree
 Hosting         Firebase Hosting
 Analytics       Firebase Analytics
 ```
@@ -48,37 +48,36 @@ Analytics       Firebase Analytics
 ## 📂 Project Structure
 
 ```
-MyPortfolio/
-├── public/                    # Static assets
+Khaleel-s-Portfolio/
+├── public/
+│   ├── images/                # Hero artwork and live-site screenshots (.webp)
+│   ├── favicon.svg
+│   ├── og-image.jpg           # 1200×630 social share card
+│   ├── robots.txt
+│   └── sitemap.xml
 ├── src/
 │   ├── components/
-│   │   ├── About.tsx          # About me section
-│   │   ├── Clock.tsx          # Live clock widget
-│   │   ├── Contact.tsx        # Contact form & links
-│   │   ├── Cursor.tsx         # Custom animated cursor
-│   │   ├── Education.tsx      # Academic background
-│   │   ├── Footer.tsx         # Site footer
-│   │   ├── Hero.tsx           # Landing hero section
-│   │   ├── Intro.tsx          # Cinematic intro animation
-│   │   ├── Marquee.tsx        # Scrolling text marquee
-│   │   ├── Navigation.tsx     # Sticky navigation bar
-│   │   ├── Projects.tsx       # Project showcase cards
-│   │   ├── RevealText.tsx     # Scroll-triggered text reveal
-│   │   ├── SectionHeader.tsx  # Reusable section headers
-│   │   └── Skills.tsx         # Skills/tech stack grid
+│   │   ├── About.tsx          # Bio, principles, and education
+│   │   ├── Clock.tsx          # Local time in the footer
+│   │   ├── Contact.tsx        # Closing call to action and email copy
+│   │   ├── ContactForm.tsx    # Formspree contact dialog
+│   │   ├── Footer.tsx         # Socials, wordmark, back to top
+│   │   ├── Hero.tsx           # Landing section and tech strip
+│   │   ├── Modal.tsx          # Shared accessible <dialog> wrapper
+│   │   ├── Navigation.tsx     # Sticky header with active-section tracking
+│   │   ├── Projects.tsx       # Featured projects and filterable workbench
+│   │   └── Skills.tsx         # Toolkit grouped by experience / engine / process
 │   ├── data/
-│   │   └── info.ts            # All portfolio content & data
-│   ├── hooks/
-│   │   └── useSmoothScroll.ts # Lenis smooth scroll hook
-│   ├── App.tsx                # Root layout with stage system
-│   ├── firebase.ts            # Firebase configuration
-│   ├── index.css              # Global styles & design tokens
-│   └── main.tsx               # App entry point
+│   │   ├── info.ts            # Profile, projects, skills, and education
+│   │   └── projectDetails.ts  # Per-project categories and feature lists
+│   ├── App.tsx                # Page layout
+│   ├── firebase.ts            # Firebase configuration (analytics)
+│   ├── index.css              # Design tokens and component styles
+│   └── main.tsx               # Entry point; defers analytics
 ├── firebase.json              # Firebase Hosting config
 ├── .firebaserc                # Firebase project linking
-├── tailwind.config.ts         # Tailwind configuration
-├── vite.config.ts             # Vite configuration
-├── tsconfig.json              # TypeScript configuration
+├── tailwind.config.ts
+├── vite.config.ts
 └── package.json
 ```
 
@@ -92,14 +91,9 @@ MyPortfolio/
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/khaleel-azaizy/My_Portfolio.git
-cd My_Portfolio
-
-# Install dependencies
+git clone https://github.com/khaleel-azaizy/Khaleel-s-Portfolio.git
+cd Khaleel-s-Portfolio
 npm install
-
-# Start development server
 npm run dev
 ```
 
@@ -116,32 +110,30 @@ Output is generated in the `dist/` directory.
 ### Deploy to Firebase
 
 ```bash
-# Build first
 npm run build
-
-# Deploy to Firebase Hosting
 npx firebase-tools deploy --only hosting
 ```
 
+> If the site moves to a custom domain, update the absolute URLs in `index.html`, `public/robots.txt`, and `public/sitemap.xml`.
+
 ## 🎨 Sections Overview
 
-| # | Section | Description |
-|---|---------|-------------|
-| 00 | **Hero** | Name, role, and animated introduction |
-| 01 | **About** | Background, pitch, and personal details |
-| 02 | **Projects** | 9 featured projects across full-stack, AI/ML, and IoT |
-| 03 | **Skills** | 22 technologies organized by Frontend, Backend, and Tools |
-| 04 | **Education** | B.Sc. Software Engineering (2021–2025) |
-| 05 | **Contact** | Email, GitHub, LinkedIn, and availability status |
+| Section | Description |
+|---------|-------------|
+| **Hero** | Introduction, calls to action, and core technologies |
+| **Work** | Two featured live products plus a filterable workbench of 7 more projects |
+| **About** | Background, principles, and B.Sc. Software Engineering (2021–2025) |
+| **Toolkit** | Technologies grouped into frontend, backend, and process |
+| **Contact** | Availability, contact form, and email |
 
 ## 🔧 Key Projects Featured
 
-- **AJ Motors** — Dual-app car rental platform with i18n & real-time booking
-- **Daily Habits Tracker** — Offline-first PWA with calendar grids & streak analytics
-- **Baby Fashion Store** — Mobile-optimized e-commerce experience
-- **Travel Diary** — Social platform with interactive maps & geotagged photos
-- **Income Classifier** — PyTorch ANN achieving 85% accuracy on census data
-- **Vitals Simulator** — Real-time healthcare IoT with anomaly detection
+- **AJ Motors** — Live car rental platform: multilingual storefront, real-time booking, and admin dashboard
+- **Baby Fashion** — Live e-commerce store: multilingual storefront, checkout, order tracking, and admin dashboard
+- **Daily Habits Tracker** — Offline-first PWA with calendar grids and streak analytics
+- **Travel Diary** — Social platform with interactive maps and geotagged photos
+- **Income Classifier** — PyTorch ANN reaching 85% accuracy on US Census data
+- **Vitals Simulator** — Real-time healthcare IoT simulation with anomaly detection
 
 ## 📄 License
 
