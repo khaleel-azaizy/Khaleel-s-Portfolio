@@ -14,7 +14,7 @@
 
 <br/><br/>
 
-A fast, accessible developer portfolio built with **React**, **TypeScript**, and **Vite** — live product previews, a filterable project workbench, and a contact form that lands straight in my inbox.
+A dark, monochrome developer portfolio built with **React**, **TypeScript**, and **Vite**: big condensed type, crossing tape banners, a filterable project index, and a contact form that lands straight in my inbox.
 
 </div>
 
@@ -24,8 +24,8 @@ A fast, accessible developer portfolio built with **React**, **TypeScript**, and
 
 | Feature | Description |
 |---|---|
-| 🖥️ **Live product previews** | Featured client projects shown in browser frames with links to the live sites |
-| 🗂️ **Filterable workbench** | Smaller projects filterable by Web apps, AI & data, and Systems |
+| 🖥️ **Live products** | Featured live sites shown as black-and-white screenshots that turn to colour on hover |
+| 🗂️ **Project index** | Every project in one table, filterable by Web apps, AI & data, and Systems |
 | 🪟 **Project details** | Each project opens in an accessible `<dialog>` with features and links |
 | ✉️ **Contact form** | Formspree-backed form with timeout, error, and success states |
 | ♿ **Accessible by default** | Skip link, focus management, `aria-pressed` filters, reduced-motion support |
@@ -39,7 +39,7 @@ A fast, accessible developer portfolio built with **React**, **TypeScript**, and
 Frontend        React 18  ·  TypeScript  ·  Vite 6
 Styling         Tailwind CSS 3  ·  Custom CSS
 Icons           React Icons (Feather, FA, SI, VSC)
-Fonts           Bricolage Grotesque  ·  DM Sans
+Fonts           Archivo (variable width and weight)
 Forms           Formspree
 Hosting         Firebase Hosting
 Analytics       Firebase Analytics
@@ -66,7 +66,8 @@ Khaleel-s-Portfolio/
 │   │   ├── Modal.tsx          # Shared accessible <dialog> wrapper
 │   │   ├── Navigation.tsx     # Sticky header with active-section tracking
 │   │   ├── Projects.tsx       # Featured projects and filterable workbench
-│   │   └── Skills.tsx         # Toolkit grouped by experience / engine / process
+│   │   ├── Skills.tsx         # Toolkit grouped by interface / engine / process
+│   │   └── Tapes.tsx          # Crossing marquee banners under the hero
 │   ├── data/
 │   │   ├── info.ts            # Profile, projects, skills, and education
 │   │   └── projectDetails.ts  # Per-project categories and feature lists
@@ -121,8 +122,8 @@ npx firebase-tools deploy --only hosting
 | Section | Description |
 |---------|-------------|
 | **Hero** | Introduction, calls to action, and core technologies |
-| **Work** | Two featured live products plus a filterable workbench of 7 more projects |
-| **About** | Background, principles, and B.Sc. Software Engineering (2021–2025) |
+| **Work** | Two featured live products plus a filterable index of all 9 projects |
+| **About** | Bio, education, and four working principles |
 | **Toolkit** | Technologies grouped into frontend, backend, and process |
 | **Contact** | Availability, contact form, and email |
 

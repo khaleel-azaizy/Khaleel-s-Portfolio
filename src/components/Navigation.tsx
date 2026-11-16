@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
-import { profile } from '../data/info'
 
 const links = [
   { id: 'projects', label: 'Work' },
   { id: 'about', label: 'About' },
   { id: 'skills', label: 'Toolkit' },
+  { id: 'contact', label: 'Contact' },
 ]
 
 export function Navigation({ onContactClick }: { onContactClick: () => void }) {
@@ -34,31 +34,29 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
         document.getElementById('menu-toggle')?.focus()
       }
     }
-    const media = window.matchMedia('(min-width: 701px)')
+    const media = window.matchMedia('(min-width: 761px)')
     const close = () => setMenuOpen(false)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     media.addEventListener('change', close)
     window.addEventListener('keydown', dismiss)
     return () => {
+      document.body.style.overflow = previousOverflow
       media.removeEventListener('change', close)
       window.removeEventListener('keydown', dismiss)
     }
   }, [menuOpen])
 
   return (
-    <header className="site-header">
-      <div className="nav-shell">
+    <>
+      <header className="site-header">
         <a
           href="#home"
           className="brand"
           aria-label="Khaleel Azaizy, home"
           onClick={() => setMenuOpen(false)}
         >
-          <span className="brand-mark" aria-hidden="true">
-            k<span>.</span>
-          </span>
-          <span className="brand-name">
-            Khaleel Azaizy<span>Software engineer</span>
-          </span>
+          khaleel azaizy
         </a>
         <nav className="desktop-nav" aria-label="Main navigation">
           {links.map((link) => (
@@ -67,22 +65,13 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
               href={`#${link.id}`}
               aria-current={active === link.id ? 'location' : undefined}
             >
-              {link.label}
+              <span>{link.label}</span>
             </a>
           ))}
         </nav>
         <div className="nav-actions">
-          {profile.available && (
-            <span className="nav-availability">
-              <span className="status-dot" />
-              Open to work
-            </span>
-          )}
-          <button
-            className="button button-small button-dark nav-contact"
-            onClick={onContactClick}
-          >
-            Let's talk <FiArrowUpRight />
+          <button className="button nav-contact" onClick={onContactClick}>
+            Get in touch
           </button>
           <button
             id="menu-toggle"
@@ -95,11 +84,11 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
             {menuOpen ? <FiX /> : <FiMenu />}
           </button>
         </div>
-      </div>
+      </header>
       {menuOpen && (
         <nav
           id="mobile-menu"
-          className="mobile-menu"
+          className="mobile-menu display"
           aria-label="Mobile navigation"
         >
           {links.map((link) => (
@@ -109,7 +98,7 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
-              <FiArrowUpRight />
+              <FiArrowUpRight aria-hidden="true" />
             </a>
           ))}
           <button
@@ -118,11 +107,11 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
               onContactClick()
             }}
           >
-            Let's talk
-            <FiArrowUpRight />
+            Get in touch
+            <FiArrowUpRight aria-hidden="true" />
           </button>
         </nav>
       )}
-    </header>
+    </>
   )
 }

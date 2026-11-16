@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { FiArrowUpRight, FiCheck, FiSend } from 'react-icons/fi'
 import { Modal } from './Modal'
 import { profile } from '../data/info'
 
@@ -76,25 +75,21 @@ export function ContactForm({
     >
       {status === 'success' ? (
         <div className="contact-success" role="status">
-          <span className="success-icon">
-            <FiCheck aria-hidden="true" />
-          </span>
-          <p className="section-kicker">A good start</p>
-          <h2 id="contact-title">Message sent.</h2>
+          <h2 id="contact-title">Message sent</h2>
           <p>
             Thanks for reaching out. I'll get back to you at the email address
             you shared.
           </p>
-          <button className="button button-dark" onClick={onClose}>
-            Back to the portfolio <FiArrowUpRight />
+          <button className="button button-solid" onClick={onClose}>
+            Back to the portfolio
           </button>
         </div>
       ) : (
         <>
-          <p className="section-kicker">Let's make something good</p>
-          <h2 id="contact-title">Hello, there.</h2>
+          <h2 id="contact-title">Get in touch</h2>
           <p className="form-intro">
-            Tell me a little about yourself and what you have in mind.
+            Tell me who you are and what you have in mind. I'll reply by
+            email.
           </p>
           <form onSubmit={handleSubmit}>
             <fieldset disabled={status === 'submitting'}>
@@ -143,7 +138,8 @@ export function ContactForm({
             </fieldset>
             {status === 'error' && (
               <p className="form-error" role="alert">
-                Your message couldn't be sent. Please try again, or{' '}
+                The message didn't go through. Check your connection and try
+                again, or{' '}
                 <a href={`mailto:${profile.email}`}>email me directly</a>.
               </p>
             )}
@@ -156,10 +152,9 @@ export function ContactForm({
               <button
                 type="submit"
                 disabled={status === 'submitting'}
-                className="button button-dark"
+                className="button button-solid"
               >
                 {status === 'submitting' ? 'Sending…' : 'Send message'}
-                <FiSend aria-hidden="true" />
               </button>
             </div>
           </form>

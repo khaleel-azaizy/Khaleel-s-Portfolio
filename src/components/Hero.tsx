@@ -1,122 +1,76 @@
-import { useRef, type PointerEvent } from 'react'
-import { FiArrowDown, FiArrowUpRight, FiCode, FiMapPin } from 'react-icons/fi'
-import { FaReact, FaNodeJs, FaPython } from 'react-icons/fa'
-import { SiTypescript, SiFirebase } from 'react-icons/si'
+import { FiArrowDown } from 'react-icons/fi'
 import { profile } from '../data/info'
 
-const technologies = [
-  { name: 'React', icon: FaReact },
-  { name: 'TypeScript', icon: SiTypescript },
-  { name: 'Node.js', icon: FaNodeJs },
-  { name: 'Firebase', icon: SiFirebase },
-  { name: 'Python', icon: FaPython },
-]
-
 export function Hero({ onContactClick }: { onContactClick: () => void }) {
-  const artRef = useRef<HTMLDivElement>(null)
-
-  const moveArtwork = (event: PointerEvent<HTMLDivElement>) => {
-    if (
-      event.pointerType !== 'mouse' ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    )
-      return
-    const box = event.currentTarget.getBoundingClientRect()
-    artRef.current?.style.setProperty(
-      '--art-x',
-      `${((event.clientX - box.left) / box.width - 0.5) * 14}px`,
-    )
-    artRef.current?.style.setProperty(
-      '--art-y',
-      `${((event.clientY - box.top) / box.height - 0.5) * 14}px`,
-    )
-  }
-
-  const resetArtwork = () => {
-    artRef.current?.style.setProperty('--art-x', '0px')
-    artRef.current?.style.setProperty('--art-y', '0px')
-  }
-
   return (
-    <section id="home" className="hero-section">
-      <div
-        className="hero-panel"
-        onPointerMove={moveArtwork}
-        onPointerLeave={resetArtwork}
-      >
-        <div className="hero-content">
-          <p className="hero-intro">
-            <span className="little-spark" aria-hidden="true">
-              ✳
-            </span>{' '}
-            Hey, I'm Khaleel
-          </p>
-          <h1>
-            Good ideas.
-            <br />
-            Built well.
-          </h1>
-          <p className="hero-description">
-            A software engineer turning complex problems into thoughtful digital
-            experiences. From the interface to everything underneath.
-          </p>
-          <div className="hero-actions">
-            <a className="button button-dark" href="#projects">
-              Explore my work <FiArrowDown />
-            </a>
-            <button className="text-button" onClick={onContactClick}>
-              Let's talk <FiArrowUpRight />
-            </button>
-          </div>
-          <div className="hero-specialties">
-            <FiCode aria-hidden="true" />
-            <span>
-              Full-stack development{' '}
-              <span className="specialty-divider">/</span> Data & AI
-            </span>
-          </div>
-        </div>
-        <div className="hero-art" ref={artRef}>
+    <section id="home" className="hero grid-12 shell">
+      <div className="hero-visual" aria-hidden="true">
+        {profile.portrait ? (
           <img
+            className="hero-portrait"
+            src={profile.portrait}
+            alt=""
+          />
+        ) : (
+          <img
+            className="hero-sculpture"
             src="/images/code-sculpture.webp"
             alt=""
             width="1254"
             height="1254"
-            className="code-sculpture"
           />
-          <div className="art-note art-note-top">
-            <span className="status-dot" />
-            Thoughtfully engineered.
-          </div>
-          <div className="art-note art-note-bottom">
-            <span className="note-symbol" aria-hidden="true">
-              ↳
-            </span>{' '}
-            From idea to live.
-          </div>
-        </div>
-        <div className="hero-baseline">
-          <span>
-            <FiMapPin aria-hidden="true" /> Based in {profile.location}
-          </span>
-          <a href="#projects">
-            A little further down <FiArrowDown aria-hidden="true" />
-          </a>
-        </div>
+        )}
       </div>
-      <div className="technology-strip">
-        <p>
-          Good tools.
-          <br />
-          <span>Better possibilities.</span>
+
+      <h1 className="hero-headline display">
+        <span className="sr-only">
+          Khaleel Azaizy, full-stack software engineer.{' '}
+        </span>
+        <span className="hero-line" aria-hidden="true">
+          <span>Building</span>
+        </span>
+        <span className="hero-line" aria-hidden="true">
+          <span>products</span>
+        </span>
+        <span className="hero-line" aria-hidden="true">
+          <span>that ship</span>
+        </span>
+        <span className="sr-only">Building products that ship.</span>
+      </h1>
+
+      {profile.available && (
+        <p className="hero-note label">
+          <span className="marks" aria-hidden="true" />
+          Open to full-time roles and freelance projects
         </p>
-        <div className="technology-logos">
-          {technologies.map(({ name, icon: Icon }) => (
-            <span key={name}>
-              <Icon aria-hidden="true" />
-              {name}
-            </span>
-          ))}
+      )}
+
+      <p className="hero-intro">
+        Full-stack software engineer in {profile.location}. I build web
+        products with React, Node.js and Firebase, and reach for Python when a
+        problem needs data or machine learning.
+      </p>
+
+      <p className="hero-sub display">
+        From the interface
+        <br />
+        to the database
+      </p>
+
+      <div className="hero-footer">
+        <div className="hero-actions">
+          <a className="button button-solid" href="#projects">
+            See my work
+          </a>
+          <button className="button" onClick={onContactClick}>
+            Get in touch
+          </button>
+        </div>
+        <div className="hero-meta label">
+          <span>B.Sc. Software Engineering, 2025</span>
+          <a href="#projects">
+            Scroll <FiArrowDown aria-hidden="true" />
+          </a>
         </div>
       </div>
     </section>

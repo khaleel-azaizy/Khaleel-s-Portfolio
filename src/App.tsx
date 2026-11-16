@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Navigation } from './components/Navigation'
 import { Hero } from './components/Hero'
+import { Tapes } from './components/Tapes'
 import { Projects } from './components/Projects'
 import { About } from './components/About'
 import { Skills } from './components/Skills'
@@ -21,6 +22,7 @@ export default function App() {
       <Navigation onContactClick={openContact} />
       <main id="main">
         <Hero onContactClick={openContact} />
+        <Tapes />
         <Projects onContactClick={openContact} />
         <About />
         <Skills />
