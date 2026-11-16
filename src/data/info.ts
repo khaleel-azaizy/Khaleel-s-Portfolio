@@ -215,6 +215,6 @@ export const profile = {
     'I build full-stack products with a strong foundation in data and AI — clean architecture, fast interfaces, and ideas that actually ship.',
   available: true,
   /** Optional hero photo, e.g. '/images/portrait.webp'. It is shown in
-   *  black and white; leave null to use the sculpture instead. */
+   *  black and white; leave null to use the ink sketch instead. */
   portrait: null as string | null,
 }

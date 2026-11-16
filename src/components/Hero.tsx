@@ -12,13 +12,9 @@ export function Hero({ onContactClick }: { onContactClick: () => void }) {
             alt=""
           />
         ) : (
-          <img
-            className="hero-sculpture"
-            src="/images/code-sculpture.webp"
-            alt=""
-            width="1254"
-            height="1254"
-          />
+          // Ink sketch from public/hero-figure.svg. The file has no fills of
+          // its own, so it is used as a mask and coloured from CSS.
+          <div className="hero-figure" />
         )}
       </div>
 

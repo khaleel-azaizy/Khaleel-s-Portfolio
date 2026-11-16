@@ -11,6 +11,33 @@ const links = [
 export function Navigation({ onContactClick }: { onContactClick: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('')
+  const [overHero, setOverHero] = useState(true)
+
+  // The hero is light and the rest of the page is dark, so the header takes
+  // the hero's colours until the hero has scrolled out from under it.
+  useEffect(() => {
+    const hero = document.getElementById('home')
+    const header = document.querySelector<HTMLElement>('.site-header')
+    if (!hero || !header) return
+    let frame = 0
+    const update = () => {
+      frame = 0
+      setOverHero(
+        hero.getBoundingClientRect().bottom > header.offsetHeight / 2,
+      )
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -49,7 +76,9 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
 
   return (
     <>
-      <header className="site-header">
+      <header
+        className={`site-header${overHero && !menuOpen ? ' is-light' : ''}`}
+      >
         <a
           href="#home"
           className="brand"

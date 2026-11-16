@@ -50,8 +50,9 @@ Analytics       Firebase Analytics
 ```
 Khaleel-s-Portfolio/
 ├── public/
-│   ├── images/                # Hero artwork and live-site screenshots (.webp)
+│   ├── images/                # Live-site screenshots (.webp)
 │   ├── favicon.svg
+│   ├── hero-figure.svg        # Ink sketch in the hero, coloured via CSS mask
 │   ├── og-image.jpg           # 1200×630 social share card
 │   ├── robots.txt
 │   └── sitemap.xml
