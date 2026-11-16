@@ -1,65 +1,98 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import {
+  FiArrowDown,
+  FiArrowUp,
+  FiCode,
+  FiDatabase,
+  FiTool,
+} from 'react-icons/fi'
 import { skills } from '../data/info'
-import { FadeIn } from './RevealText'
 
-const groups = [
-  { id: 'frontend', label: 'Frontend' },
-  { id: 'backend',  label: 'Backend' },
-  { id: 'tools',    label: 'Toolkit' },
-] as const
+const categories = [
+  {
+    id: 'frontend',
+    title: 'The experience',
+    subtitle: 'Interfaces that feel right.',
+    icon: FiCode,
+    names: ['React', 'TypeScript', 'JavaScript', 'Angular', 'HTML5', 'CSS3'],
+  },
+  {
+    id: 'backend',
+    title: 'The engine',
+    subtitle: 'Solid foundations underneath.',
+    icon: FiDatabase,
+    names: ['Node.js', 'Express.js', 'Python', 'Firebase', 'MySQL', 'MongoDB'],
+  },
+  {
+    id: 'tools',
+    title: 'The process',
+    subtitle: 'From the first commit to ship.',
+    icon: FiTool,
+    names: ['Git', 'GitHub', 'Docker', 'Figma', 'VS Code', 'Terminal'],
+  },
+]
 
 export function Skills() {
+  const [expanded, setExpanded] = useState(false)
+  const remaining = skills.filter(
+    (skill) =>
+      !categories.some((category) => category.names.includes(skill.name)),
+  )
   return (
-    <section id="skills" className="relative">
-      <div className="px-6 md:px-10 pt-20 md:pt-28">
-        <div className="flex items-center justify-between eyebrow">
-          <span>(03) — Stack</span>
-          <span className="mono">{skills.length} entries</span>
-        </div>
-        <div className="hair my-6" />
-
-        <FadeIn>
-          <h2 className="font-display text-display-lg font-medium text-ink">
-            What I work <span className="accent-word">with.</span>
+    <section id="skills" className="skills-section section-shell">
+      <div className="section-heading">
+        <div>
+          <p className="section-kicker">Tools of the trade</p>
+          <h2>
+            My everyday toolkit<span className="heading-period">.</span>
           </h2>
-        </FadeIn>
+        </div>
+        <p>
+          The right tool for the problem.
+          <br />
+          Always room to learn another.
+        </p>
       </div>
-
-      <div className="px-6 md:px-10 mt-12 md:mt-16 pb-24 md:pb-32 space-y-14">
-        {groups.map((g, gi) => {
-          const items = skills.filter((s) => s.category === g.id)
-          return (
-            <motion.div
-              key={g.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-10%' }}
-              transition={{ duration: 0.5, delay: gi * 0.025, ease: [0.16, 1, 0.3, 1] }}
-              className="grid grid-cols-12 gap-6 border-t border-ink/15 pt-8"
-            >
-              <div className="col-span-12 md:col-span-3 space-y-2">
-                <div className="mono text-[11px] text-ink-3 tabular-nums">
-                  0{gi + 1} · {String(items.length).padStart(2, '0')}
-                </div>
-                <h3 className="font-display text-3xl md:text-4xl tracking-snug text-ink">
-                  {g.label}
-                </h3>
-              </div>
-
-              <ul className="col-span-12 md:col-span-9 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3">
-                {items.map((s) => (
-                  <li
-                    key={s.name}
-                    className="group flex items-center gap-3 py-2 border-b border-ink/10 hover:border-ember/60 transition-colors"
-                  >
-                    <s.icon className="w-5 h-5 text-ink-3 group-hover:text-ember transition-colors" />
-                    <span className="font-display text-xl tracking-snug text-ink">{s.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )
-        })}
+      <div className="skills-columns">
+        {categories.map((category) => (
+          <div className="skill-category" key={category.id}>
+            <category.icon className="category-icon" aria-hidden="true" />
+            <h3>{category.title}</h3>
+            <p>{category.subtitle}</p>
+            <div className="skill-chips">
+              {category.names.map((name) => {
+                const skill = skills.find((item) => item.name === name)!
+                return (
+                  <span key={name}>
+                    <skill.icon aria-hidden="true" />
+                    {name}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="more-tools">
+        <button
+          className="text-button"
+          aria-expanded={expanded}
+          aria-controls="additional-tools"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? 'A little less' : 'A few more in the toolbox'}
+          {expanded ? <FiArrowUp /> : <FiArrowDown />}
+        </button>
+        <div id="additional-tools" hidden={!expanded}>
+          <div className="skill-chips">
+            {remaining.map(({ name, icon: Icon }) => (
+              <span key={name}>
+                <Icon aria-hidden="true" />
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )

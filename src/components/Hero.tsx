@@ -1,95 +1,124 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { RevealLine } from './RevealText'
-import { HeroFigure } from './HeroFigure'
+import { useRef, type PointerEvent } from 'react'
+import { FiArrowDown, FiArrowUpRight, FiCode, FiMapPin } from 'react-icons/fi'
+import { FaReact, FaNodeJs, FaPython } from 'react-icons/fa'
+import { SiTypescript, SiFirebase } from 'react-icons/si'
 import { profile } from '../data/info'
 
-export function Hero() {
-  const { scrollY } = useScroll()
-  const drift = useTransform(scrollY, [0, 900], [0, -60])
+const technologies = [
+  { name: 'React', icon: FaReact },
+  { name: 'TypeScript', icon: SiTypescript },
+  { name: 'Node.js', icon: FaNodeJs },
+  { name: 'Firebase', icon: SiFirebase },
+  { name: 'Python', icon: FaPython },
+]
+
+export function Hero({ onContactClick }: { onContactClick: () => void }) {
+  const artRef = useRef<HTMLDivElement>(null)
+
+  const moveArtwork = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      event.pointerType !== 'mouse' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    )
+      return
+    const box = event.currentTarget.getBoundingClientRect()
+    artRef.current?.style.setProperty(
+      '--art-x',
+      `${((event.clientX - box.left) / box.width - 0.5) * 14}px`,
+    )
+    artRef.current?.style.setProperty(
+      '--art-y',
+      `${((event.clientY - box.top) / box.height - 0.5) * 14}px`,
+    )
+  }
+
+  const resetArtwork = () => {
+    artRef.current?.style.setProperty('--art-x', '0px')
+    artRef.current?.style.setProperty('--art-y', '0px')
+  }
 
   return (
-    <section id="home" className="hero-section relative min-h-[100svh] flex flex-col">
-      {/* Name — full-bleed, the anchor of the whole page */}
-      <div className="hero-shell px-6 md:px-10 pt-24 md:pt-28">
-        <div className="flex items-center justify-between eyebrow">
-          <span>(00) — Index</span>
-          <span className="hidden sm:block">Software Engineer</span>
-        </div>
-
-        <h1 className="hero-name mt-8 md:mt-10 font-display text-display-xl font-semibold text-ink">
-          <span className="block">
-            <RevealLine delay={0.05}>Khaleel</RevealLine>
-          </span>
-          <span className="block">
-            <RevealLine delay={0.16}>
-              <span>Azaizy</span>
-              <span className="accent-word">.</span>
-            </RevealLine>
-          </span>
-        </h1>
-      </div>
-
-      {/* Statement beside the figure, copy holding the left edge.
-
-          The figure is sized by height rather than width: the hero has a fixed
-          vertical budget, and the artwork is roughly square (632x545 after
-          cropping the exported frame's dead space), so driving it from a width
-          would overshoot the budget on desktop and swallow the fold on phones. */}
-      {/* justify-end is "bottom" while this is a column and "right" once it is a
-          row, so the row case is stated separately — otherwise the copy loses
-          the left gutter. */}
-      <div className="hero-band flex-1 px-6 md:px-10 mt-8 pb-4 md:pb-0 flex flex-col md:flex-row md:items-end justify-end md:justify-between gap-6 md:gap-10">
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="order-2 md:order-none text-ink-2 text-base md:text-xl leading-[1.5] max-w-[46ch] md:flex-1 md:pb-2"
-        >
-          I build full-stack products end to end — storefront, admin, API, and the
-          data layer under it.
-        </motion.p>
-
-        {/* Bleeds through the page gutter on the right, so the drawing runs to
-            the edge instead of sitting inside the text column. The widths add
-            back the gutter the negative margin eats.
-
-            order-1: stacked on phones the drawing leads and the statement sits
-            under it; DOM order stays copy-first so a screen reader still gets
-            the sentence before the decorative art. */}
-        <motion.figure
-          className="order-1 md:order-none m-0 shrink-0 self-start md:self-end -mr-6 md:-mr-10 w-[calc(100%+1.5rem)] md:w-[calc(46%+2.5rem)] lg:w-auto"
-          style={{ y: drift }}
-        >
-          {/* Width/height come from .hero-figure — which axis drives depends on
-              the breakpoint, so only the ratio is set here. */}
-          <HeroFigure className="aspect-[632/545]" />
-        </motion.figure>
-      </div>
-
-      {/* Machine readout */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.9 }}
-        className="border-t border-ink/15 px-6 md:px-10 py-4"
+    <section id="home" className="hero-section">
+      <div
+        className="hero-panel"
+        onPointerMove={moveArtwork}
+        onPointerLeave={resetArtwork}
       >
-        <div className="status-strip">
-          {profile.available && (
-            <span className="inline-flex items-center gap-2 text-ink-2">
-              <span className="live-dot" aria-hidden />
-              Available for work
+        <div className="hero-content">
+          <p className="hero-intro">
+            <span className="little-spark" aria-hidden="true">
+              ✳
+            </span>{' '}
+            Hey, I'm Khaleel
+          </p>
+          <h1>
+            Good ideas.
+            <br />
+            Built well.
+          </h1>
+          <p className="hero-description">
+            A software engineer turning complex problems into thoughtful digital
+            experiences. From the interface to everything underneath.
+          </p>
+          <div className="hero-actions">
+            <a className="button button-dark" href="#projects">
+              Explore my work <FiArrowDown />
+            </a>
+            <button className="text-button" onClick={onContactClick}>
+              Let's talk <FiArrowUpRight />
+            </button>
+          </div>
+          <div className="hero-specialties">
+            <FiCode aria-hidden="true" />
+            <span>
+              Full-stack development{' '}
+              <span className="specialty-divider">/</span> Data & AI
             </span>
-          )}
-          <span className="sep">/</span>
-          <span>
-            <span className="val">2</span> products in production
-          </span>
-          <span className="sep">/</span>
-          <span>Full-stack · Data · AI</span>
-          <span className="sep">/</span>
-          <span>B.Sc SWE — Kinneret ’25</span>
+          </div>
         </div>
-      </motion.div>
+        <div className="hero-art" ref={artRef}>
+          <img
+            src="/images/code-sculpture.webp"
+            alt=""
+            width="1254"
+            height="1254"
+            className="code-sculpture"
+          />
+          <div className="art-note art-note-top">
+            <span className="status-dot" />
+            Thoughtfully engineered.
+          </div>
+          <div className="art-note art-note-bottom">
+            <span className="note-symbol" aria-hidden="true">
+              ↳
+            </span>{' '}
+            From idea to live.
+          </div>
+        </div>
+        <div className="hero-baseline">
+          <span>
+            <FiMapPin aria-hidden="true" /> Based in {profile.location}
+          </span>
+          <a href="#projects">
+            A little further down <FiArrowDown aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+      <div className="technology-strip">
+        <p>
+          Good tools.
+          <br />
+          <span>Better possibilities.</span>
+        </p>
+        <div className="technology-logos">
+          {technologies.map(({ name, icon: Icon }) => (
+            <span key={name}>
+              <Icon aria-hidden="true" />
+              {name}
+            </span>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

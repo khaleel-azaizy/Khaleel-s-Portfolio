@@ -1,52 +1,80 @@
-import { FadeIn } from './RevealText'
-import { profile } from '../data/info'
+import {
+  FiArrowUpRight,
+  FiBox,
+  FiCode,
+  FiLayers,
+  FiMapPin,
+} from 'react-icons/fi'
+import { education, profile } from '../data/info'
 
 export function About() {
   return (
-    <section id="about" className="relative">
-      <div className="px-6 md:px-10 pt-24 md:pt-32">
-        <div className="flex items-center justify-between eyebrow">
-          <span>(01) — About</span>
-          <span className="mono">Bio</span>
+    <section id="about" className="about-section section-shell">
+      <div className="about-art">
+        <div className="about-art-top">
+          <span>A little about me</span>
+          <FiCode aria-hidden="true" />
         </div>
-        <div className="hair my-6" />
+        <div className="initials-art" aria-hidden="true">
+          <span>k</span>
+          <span>a</span>
+          <i>✳</i>
+        </div>
+        <div className="about-art-bottom">
+          <span>
+            <FiMapPin />
+            {profile.location}
+          </span>
+          <span>Curious by default.</span>
+        </div>
       </div>
-
-      <div className="px-6 md:px-10 pb-24 md:pb-36 grid grid-cols-1 md:grid-cols-12 gap-10">
-        {/* Lede */}
-        <div className="md:col-span-8">
-          <FadeIn>
-            <p className="font-display text-display-md font-normal">
-              Software engineer building
-              <span className="accent-word"> full-stack </span>
-              products end to end, with
-              <span className="emph"> data </span>
-              and
-              <span className="accent-word"> AI </span>
-              where it earns its place.
-            </p>
-          </FadeIn>
+      <div className="about-content">
+        <p className="section-kicker">The person behind the code</p>
+        <h2>
+          Curiosity first.
+          <br />
+          Craft, always.
+        </h2>
+        <p>
+          I'm Khaleel, a software engineer who likes seeing the whole picture.
+          The interface someone touches. The systems that keep it running. The
+          little details that make it feel right.
+        </p>
+        <p>
+          I build full-stack products with React, Node.js, and Firebase, and
+          explore what data and AI can bring to the experience. My favorite part
+          is connecting those pieces into something useful.
+        </p>
+        <div className="about-principles">
+          <span>
+            <FiLayers aria-hidden="true" />
+            End-to-end thinking
+          </span>
+          <span>
+            <FiBox aria-hidden="true" />
+            Made for the real world
+          </span>
         </div>
-
-        {/* Sidebar facts */}
-        <aside className="md:col-span-3 md:col-start-10 space-y-8 self-end">
-          <Fact label="Based in" value={profile.location} />
-          <Fact label="Focus" value="Full-stack · Data · AI" />
-          <Fact label="Open to" value="Roles & Freelance" />
-          <Fact label="Education" value="Kinneret Academic College" />
-        </aside>
+        <div className="education-note" id="education">
+          <span className="education-icon" aria-hidden="true">
+            ↗
+          </span>
+          <div>
+            <h3>{education[0].degree}</h3>
+            <p>
+              {education[0].school} <span>2021–2025</span>
+            </p>
+          </div>
+        </div>
+        <a
+          className="text-link"
+          href={profile.linkedIn}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          More about me on LinkedIn <FiArrowUpRight />
+        </a>
       </div>
     </section>
-  )
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <FadeIn delay={0.1} y={12}>
-      <div>
-        <div className="eyebrow mb-1">{label}</div>
-        <div className="font-display text-2xl tracking-snug text-ink">{value}</div>
-      </div>
-    </FadeIn>
   )
 }

@@ -1,36 +1,45 @@
-import { Clock } from './Clock'
+import { FiArrowUp, FiArrowUpRight } from 'react-icons/fi'
 import { profile } from '../data/info'
+import { Clock } from './Clock'
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-ink/20 px-6 md:px-10 py-10">
-      {/* Massive last word */}
-      <div className="mb-12 select-none overflow-hidden">
-        <div className="font-display text-[clamp(120px,46vw,780px)] leading-[0.78] tracking-tightest font-semibold text-ink">
-          AZ<span className="accent-word">.</span>
+    <footer className="site-footer section-shell">
+      <div className="footer-top">
+        <a
+          href="#home"
+          className="brand"
+          aria-label="Khaleel Azaizy, back to top"
+        >
+          <span className="brand-mark" aria-hidden="true">
+            k<span>.</span>
+          </span>
+          <span>Built with intention.</span>
+        </a>
+        <div className="footer-socials">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer">
+            GitHub <FiArrowUpRight />
+          </a>
+          <a href={profile.linkedIn} target="_blank" rel="noopener noreferrer">
+            LinkedIn <FiArrowUpRight />
+          </a>
+          <a href={`mailto:${profile.email}`}>
+            Email <FiArrowUpRight />
+          </a>
         </div>
       </div>
-
-      <div className="grid grid-cols-12 gap-6 eyebrow text-ink-3">
-        <div className="col-span-6 md:col-span-4 space-y-1">
-          <div>Local</div>
-          <div className="text-ink-2"><Clock /> · {profile.location}</div>
-        </div>
-        <div className="col-span-6 md:col-span-4 space-y-1">
-          <div>Elsewhere</div>
-          <a className="social-link social-link--block link-arc text-ink-2" href={profile.github} target="_blank" rel="noopener noreferrer">
-            GitHub <span className="social-arrow" aria-hidden>↗</span>
-          </a>
-          <a className="social-link social-link--block link-arc text-ink-2" href={profile.linkedIn} target="_blank" rel="noopener noreferrer">
-            LinkedIn <span className="social-arrow" aria-hidden>↗</span>
-          </a>
-          <a className="social-link social-link--block link-arc text-ink-2" href={`mailto:${profile.email}`}>
-            Gmail <span className="social-arrow" aria-hidden>↗</span>
-          </a>
-        </div>
-        <div className="col-span-12 md:col-span-4 space-y-1 md:text-right">
-          <div className="text-ink-2">© {new Date().getFullYear()} Khaleel Azaizy</div>
-        </div>
+      <p className="footer-wordmark" aria-hidden="true">
+        Khaleel Azaizy<span>.</span>
+      </p>
+      <div className="footer-bottom">
+        <span>© {new Date().getFullYear()} Khaleel Azaizy</span>
+        <span className="footer-time">
+          <span className="status-dot" />
+          <Clock /> in Israel
+        </span>
+        <a href="#home">
+          Back to top <FiArrowUp />
+        </a>
       </div>
     </footer>
   )

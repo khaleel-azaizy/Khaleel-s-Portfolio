@@ -1,173 +1,128 @@
-import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion, useTransform } from 'framer-motion'
-import { sections, type SectionId } from '../data/info'
-import { Clock } from './Clock'
-import { getLenis } from '../hooks/useSmoothScroll'
-import { useScrollVelocity } from '../hooks/useScrollVelocity'
-import { readStages, useActiveStage } from '../hooks/useActiveStage'
+import { useEffect, useState } from 'react'
+import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
+import { profile } from '../data/info'
 
-type NavigationProps = {
-  onContactClick: () => void
-}
+const links = [
+  { id: 'projects', label: 'Work' },
+  { id: 'about', label: 'About' },
+  { id: 'skills', label: 'Toolkit' },
+]
 
-export function Navigation({ onContactClick }: NavigationProps) {
-  const { active, stagesRef } = useActiveStage()
+export function Navigation({ onContactClick }: { onContactClick: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const velocity = useScrollVelocity()
+  const [active, setActive] = useState('')
 
-  // Active dash stretches with scroll speed.
-  const dashWidth = useTransform(velocity, (v) => 24 + Math.abs(v) * 18)
-
-  const scrollToSection = useCallback((id: SectionId) => {
-    const stages = stagesRef.current.length ? stagesRef.current : readStages()
-    const target = stages.find((s) => s.id === id)
-    if (!target) return
-
-    const lenis = getLenis()
-    // Keep the URL in step so deep links and the back button work.
-    const settle = () => history.replaceState(null, '', `#${id}`)
-
-    if (lenis) {
-      lenis.scrollTo(target.top, {
-        duration: 1.2,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        lock: true,
-        force: true,
-        immediate: false,
-        onComplete: settle,
-      })
-    } else {
-      window.scrollTo({ top: target.top, behavior: 'smooth' })
-      settle()
-    }
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        }),
+      { rootMargin: '-15% 0px -55% 0px', threshold: 0 },
+    )
+    document
+      .querySelectorAll('main > section[id]')
+      .forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
   }, [])
 
-  // Honour a hash on first load, once stages have been measured.
   useEffect(() => {
-    const id = window.location.hash.slice(1) as SectionId
-    if (!id || !sections.some((s) => s.id === id)) return
-    const raf = requestAnimationFrame(() => scrollToSection(id))
-    return () => cancelAnimationFrame(raf)
-  }, [scrollToSection])
-
-  const activeSection = sections.find((s) => s.id === active) ?? sections[0]
+    if (!menuOpen) return
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        document.getElementById('menu-toggle')?.focus()
+      }
+    }
+    const media = window.matchMedia('(min-width: 701px)')
+    const close = () => setMenuOpen(false)
+    media.addEventListener('change', close)
+    window.addEventListener('keydown', dismiss)
+    return () => {
+      media.removeEventListener('change', close)
+      window.removeEventListener('keydown', dismiss)
+    }
+  }, [menuOpen])
 
   return (
-    <>
-      {/* Top bar */}
-      <header className="fixed top-0 left-0 right-0 z-[75] px-6 md:px-10 py-4 flex items-center justify-between pointer-events-none text-ink-3">
-        <div className="chrome-pill pointer-events-auto flex items-center gap-3">
-          <span className="pulse-dot" aria-hidden />
-          <button onClick={onContactClick} className="cta-pill" data-cursor="hover">
-            Contact me
-            <span className="cta-arrow" aria-hidden>↗</span>
-          </button>
-        </div>
-
+    <header className="site-header">
+      <div className="nav-shell">
         <a
           href="#home"
-          onClick={(e) => { e.preventDefault(); scrollToSection('home') }}
-          className="chrome-pill pointer-events-auto eyebrow tracking-wider text-ink hover:text-ember transition-colors"
+          className="brand"
+          aria-label="Khaleel Azaizy, home"
+          onClick={() => setMenuOpen(false)}
         >
-          Khaleel. Azaizy
+          <span className="brand-mark" aria-hidden="true">
+            k<span>.</span>
+          </span>
+          <span className="brand-name">
+            Khaleel Azaizy<span>Software engineer</span>
+          </span>
         </a>
-
-        <div className="chrome-pill pointer-events-auto eyebrow text-right hidden md:block">
-          <Clock /> <span className="text-ink-3">UTC+3</span>
-        </div>
-      </header>
-
-      {/* Desktop rail */}
-      <nav
-        className="rail-shell fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col gap-3 text-ink-3"
-        aria-label="Section navigation"
-      >
-        {sections.map((s) => {
-          const isActive = active === s.id
-          return (
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {links.map((link) => (
             <a
-              key={s.id}
-              href={`#${s.id}`}
-              onClick={(e) => { e.preventDefault(); scrollToSection(s.id) }}
-              aria-current={isActive ? 'true' : undefined}
-              className="group flex items-center justify-end gap-3 eyebrow"
+              key={link.id}
+              href={`#${link.id}`}
+              aria-current={active === link.id ? 'location' : undefined}
             >
-              <span
-                className={`transition-all duration-500 ${
-                  isActive
-                    ? 'opacity-100 translate-x-0 text-ink'
-                    : 'opacity-0 translate-x-2 group-hover:opacity-80 group-hover:translate-x-0'
-                }`}
-              >
-                {s.label}
-              </span>
-              {isActive ? (
-                <motion.span className="block h-px bg-ember" style={{ width: dashWidth }} />
-              ) : (
-                <span className="block h-px w-3 bg-ink-3 transition-all duration-500 group-hover:w-5" />
-              )}
+              {link.label}
             </a>
-          )
-        })}
-      </nav>
-
-      {/* Mobile section nav — reads as instrument chrome rather than a
-          hamburger, and reuses the same active-section state as the rail. */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-[76]">
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.ul
-              id="mobile-sections"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-paper-2/95 backdrop-blur-md border-t border-ink/15 px-6 py-2"
-            >
-              {sections.map((s) => (
-                <li key={s.id}>
-                  <a
-                    href={`#${s.id}`}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setMenuOpen(false)
-                      scrollToSection(s.id)
-                    }}
-                    aria-current={active === s.id ? 'true' : undefined}
-                    className={`flex items-center gap-4 py-3 border-b border-ink/10 last:border-b-0 eyebrow ${
-                      active === s.id ? 'text-ember' : 'text-ink-2'
-                    }`}
-                  >
-                    <span className="tabular-nums">{s.index}</span>
-                    <span className="font-display text-xl tracking-snug normal-case">
-                      {s.label}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </motion.ul>
+          ))}
+        </nav>
+        <div className="nav-actions">
+          {profile.available && (
+            <span className="nav-availability">
+              <span className="status-dot" />
+              Open to work
+            </span>
           )}
-        </AnimatePresence>
-
-        <button
-          type="button"
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-sections"
-          className="w-full flex items-center justify-between gap-4 px-6 py-4 bg-paper-2/95 backdrop-blur-md border-t border-ink/15 eyebrow text-ink-2"
-        >
-          <span className="flex items-center gap-3">
-            <span className="tabular-nums text-ember">{activeSection.index}</span>
-            <span>{activeSection.label}</span>
-          </span>
-          <span
-            aria-hidden
-            className={`transition-transform duration-500 ease-out-expo ${menuOpen ? 'rotate-180' : ''}`}
+          <button
+            className="button button-small button-dark nav-contact"
+            onClick={onContactClick}
           >
-            ▲
-          </span>
-        </button>
+            Let's talk <FiArrowUpRight />
+          </button>
+          <button
+            id="menu-toggle"
+            className="icon-button menu-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FiX /> : <FiMenu />}
+          </button>
+        </div>
       </div>
-    </>
+      {menuOpen && (
+        <nav
+          id="mobile-menu"
+          className="mobile-menu"
+          aria-label="Mobile navigation"
+        >
+          {links.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+              <FiArrowUpRight />
+            </a>
+          ))}
+          <button
+            onClick={() => {
+              setMenuOpen(false)
+              onContactClick()
+            }}
+          >
+            Let's talk
+            <FiArrowUpRight />
+          </button>
+        </nav>
+      )}
+    </header>
   )
 }
