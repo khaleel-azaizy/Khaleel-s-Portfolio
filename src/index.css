@@ -329,31 +329,154 @@ p {
   border-color: var(--bone);
 }
 
+/* Hamburger: two rules that cross into an X when the menu opens. */
+.burger {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 9px;
+}
+.burger i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transition:
+    top 0.25s var(--ease) 0.2s,
+    transform 0.3s var(--ease);
+}
+.burger i:last-child {
+  top: calc(100% - 1.5px);
+}
+[aria-expanded='true'] > .burger i {
+  top: calc(50% - 0.75px);
+  transition:
+    top 0.25s var(--ease),
+    transform 0.3s var(--ease) 0.2s;
+}
+[aria-expanded='true'] > .burger i:first-child {
+  transform: rotate(45deg);
+}
+[aria-expanded='true'] > .burger i:last-child {
+  transform: rotate(-45deg);
+}
+
+/* Side panel. Opening: the backdrop dims, the panel slides in from the
+   right, then each line rises into place. Closing runs it back faster. */
 .mobile-menu {
+  --menu-ease: cubic-bezier(0.76, 0, 0.24, 1);
   position: fixed;
   inset: 0;
   z-index: 39;
   display: flex;
-  flex-direction: column;
   justify-content: flex-end;
-  gap: 4px;
-  padding: calc(var(--header-h) + 24px) var(--gutter) 40px;
-  background: var(--void);
+  visibility: hidden;
+  transition: visibility 0s linear 0.6s;
 }
-.mobile-menu a,
-.mobile-menu button {
+.mobile-menu.is-open {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.6);
+  opacity: 0;
+  transition: opacity 0.45s;
+}
+.is-open .menu-backdrop {
+  opacity: 1;
+}
+.menu-panel {
+  position: relative;
+  width: min(100%, 460px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: calc(var(--header-h) + 28px) var(--gutter) 32px;
+  overflow-y: auto;
+  background: var(--void);
+  border-left: 1px solid var(--rule);
+  transform: translateX(100%);
+  transition: transform 0.55s var(--menu-ease);
+}
+.is-open .menu-panel {
+  transform: none;
+  transition-duration: 0.7s;
+}
+.menu-note {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  padding: 10px 0;
+  color: var(--ash);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.is-open .menu-note {
+  opacity: 1;
+  transition: opacity 0.5s 0.45s;
+}
+.menu-links {
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+.menu-links li {
+  overflow: hidden;
   border-bottom: 1px solid var(--rule);
-  font-size: clamp(40px, 13vw, 72px);
+}
+.menu-links a,
+.menu-links button {
+  display: block;
+  width: 100%;
+  padding: 10px 0 8px;
+  font-size: clamp(40px, 12vw, 64px);
   text-align: left;
   text-transform: inherit;
 }
-.mobile-menu svg {
-  width: 28px;
-  height: 28px;
+.menu-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  transform: translateY(110%);
+  transition: transform 0.3s var(--menu-ease);
+}
+.is-open .menu-line {
+  transform: none;
+  transition: transform 0.7s var(--ease);
+}
+.is-open li:nth-child(1) .menu-line { transition-delay: 0.22s; }
+.is-open li:nth-child(2) .menu-line { transition-delay: 0.28s; }
+.is-open li:nth-child(3) .menu-line { transition-delay: 0.34s; }
+.is-open li:nth-child(4) .menu-line { transition-delay: 0.4s; }
+.is-open li:nth-child(5) .menu-line { transition-delay: 0.46s; }
+.menu-line svg {
+  width: 26px;
+  height: 26px;
+  transition: transform 0.25s var(--ease);
+}
+.menu-links a:hover svg,
+.menu-links button:hover svg {
+  transform: translate(3px, -3px);
+}
+.menu-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.is-open .menu-footer {
+  opacity: 1;
+  transition: opacity 0.5s 0.55s;
+}
+@media (min-width: 761px) {
+  .mobile-menu {
+    display: none;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -460,6 +583,12 @@ p {
   from {
     transform: translateY(105%);
   }
+}
+/* The loader in index.html removes .is-loading as its curtain lifts; until
+   then the hero's entrance waits in its first frame. */
+html.is-loading .hero-line > span,
+html.is-loading .hero-figure {
+  animation-play-state: paused;
 }
 
 .hero-note {
@@ -1061,6 +1190,8 @@ p {
   transform: scaleY(1.45);
   transform-origin: bottom;
   user-select: none;
+  /* Stretched upward, its box covers the footer bar; let clicks through. */
+  pointer-events: none;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1431,8 +1562,10 @@ p {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
   }
   .tape-track {
     animation: none;

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="is-loading">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,8 +56,197 @@
       rel="stylesheet"
     />
     <title>Khaleel Azaizy — Software Engineer</title>
+    <!-- Loader styles live inline so the curtain paints before the app's CSS
+         and JS arrive. -->
+    <style>
+      html.is-loading {
+        overflow: hidden;
+      }
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: 68px 1fr auto auto;
+        padding: 0 clamp(16px, 3.2vw, 44px) clamp(20px, 3.4vw, 40px);
+        background: #000;
+        color: #e8e6e1;
+        font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+        transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+      }
+      #loader.is-done {
+        transform: translateY(-100%);
+      }
+      .loader-brand {
+        align-self: center;
+        font-size: 21px;
+        font-stretch: 82%;
+        font-weight: 640;
+        letter-spacing: -0.025em;
+      }
+      .loader-note {
+        align-self: center;
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 560;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .loader-note i {
+        width: 6px;
+        height: 6px;
+        margin-right: 17px;
+        background: currentColor;
+        box-shadow: 9px 0 0 currentColor;
+      }
+      .loader-count {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        font-size: clamp(120px, 28vw, 400px);
+        font-stretch: 72%;
+        font-weight: 420;
+        line-height: 0.78;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+      .loader-bar {
+        grid-column: 1 / -1;
+        grid-row: 4;
+        height: 1px;
+        margin-top: clamp(16px, 2.4vw, 28px);
+        background: #2a2a2a;
+      }
+      .loader-bar span {
+        display: block;
+        height: 100%;
+        background: #e8e6e1;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+      @media (max-width: 760px) {
+        #loader {
+          grid-template-rows: 60px 1fr auto auto;
+        }
+        .loader-note {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #loader {
+          transition: opacity 0.3s;
+        }
+        #loader.is-done {
+          transform: none;
+          opacity: 0;
+        }
+      }
+    </style>
+    <noscript><style>#loader { display: none; } html.is-loading { overflow: auto; }</style></noscript>
   </head>
   <body>
+    <div id="loader" aria-hidden="true">
+      <span class="loader-brand">khaleel azaizy</span>
+      <span class="loader-note"><i></i>Building products that ship</span>
+      <span class="loader-count" id="loader-count">0</span>
+      <span class="loader-bar"><span id="loader-bar"></span></span>
+    </div>
+    <script>
+      /* Page loader. Counts up while the page loads, then lifts like a
+         curtain off the hero. The hero's entrance waits on html.is-loading,
+         which is removed as the curtain rises so the two play as one. */
+      ;(function () {
+        var root = document.documentElement
+        var el = document.getElementById('loader')
+        var countEl = document.getElementById('loader-count')
+        var barEl = document.getElementById('loader-bar')
+        var finished = false
+
+        function remove() {
+          if (el && el.parentNode) el.parentNode.removeChild(el)
+        }
+        function bail() {
+          root.classList.remove('is-loading')
+          remove()
+        }
+
+        try {
+          var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          var seen = false
+          try {
+            seen = sessionStorage.getItem('loader-seen') === '1'
+            sessionStorage.setItem('loader-seen', '1')
+          } catch (e) {}
+          // First visit gets the full count; reloads in the same tab and
+          // reduced-motion visitors get a short one.
+          var minTime = reduce || seen ? 300 : 1400
+          var start = performance.now()
+          var last = start
+          var shown = 0
+          var ready = false
+
+          function render(value) {
+            countEl.textContent = String(Math.round(value))
+            barEl.style.transform = 'scaleX(' + value / 100 + ')'
+          }
+
+          function exit() {
+            if (finished) return
+            finished = true
+            el.classList.add('is-done')
+            // Start the hero as the curtain uncovers it, not before.
+            setTimeout(function () {
+              root.classList.remove('is-loading')
+            }, reduce ? 0 : 380)
+            el.addEventListener('transitionend', remove)
+            setTimeout(remove, 1400)
+          }
+
+          function tick(now) {
+            if (finished) return
+            // Creep toward 90 until the page is ready, then run to 100. The
+            // easing is time-based so it moves at the same speed on 60Hz and
+            // 120Hz screens.
+            var dt = Math.min(100, now - last)
+            last = now
+            var target = ready ? 100 : Math.min(90, ((now - start) / minTime) * 90)
+            shown += (target - shown) * (1 - Math.exp(-dt / (ready ? 70 : 160)))
+            if (ready && 100 - shown < 0.6) shown = 100
+            render(shown)
+            if (shown >= 100) {
+              setTimeout(exit, reduce ? 0 : 160)
+              return
+            }
+            requestAnimationFrame(tick)
+          }
+
+          var loaded = new Promise(function (resolve) {
+            if (document.readyState === 'complete') resolve()
+            else window.addEventListener('load', resolve, { once: true })
+          })
+          var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()
+          var minimum = new Promise(function (resolve) {
+            setTimeout(resolve, minTime)
+          })
+          Promise.all([loaded, fonts, minimum]).then(function () {
+            ready = true
+          })
+          // Never hold the page hostage to a slow font or image.
+          setTimeout(function () {
+            ready = true
+          }, 4500)
+          // A hidden tab pauses animation frames; finish without them.
+          setTimeout(function () {
+            if (!finished) bail()
+          }, 9000)
+
+          requestAnimationFrame(tick)
+        } catch (error) {
+          bail()
+        }
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

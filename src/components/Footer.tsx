@@ -1,3 +1,4 @@
+import { FiArrowUp } from 'react-icons/fi'
 import { profile } from '../data/info'
 import { Clock } from './Clock'
 
@@ -14,7 +15,10 @@ export function Footer() {
             <Clock /> in {profile.location}
           </span>
         </span>
-        <a href="#home">Back to top</a>
+        <a className="bracket" href="#home">
+          Back to top
+          <FiArrowUp aria-hidden="true" />
+        </a>
       </div>
       <p className="footer-wordmark" aria-hidden="true">
         Khaleel Azaizy

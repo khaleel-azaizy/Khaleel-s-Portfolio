@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
+import { useEffect, useRef, useState } from 'react'
+import { FiArrowUpRight } from 'react-icons/fi'
+import { profile } from '../data/info'
 
 const links = [
   { id: 'projects', label: 'Work' },
@@ -12,6 +13,8 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('')
   const [overHero, setOverHero] = useState(true)
+  const panelRef = useRef<HTMLElement>(null)
+  const closeMenu = () => setMenuOpen(false)
 
   // The hero is light and the rest of the page is dark, so the header takes
   // the hero's colours until the hero has scrolled out from under it.
@@ -65,12 +68,19 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
     const close = () => setMenuOpen(false)
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    // The panel is visible from the first frame of its slide, so focus can
+    // move in straight away for keyboard users.
+    panelRef.current?.querySelector('a')?.focus({ preventScroll: true })
     media.addEventListener('change', close)
     window.addEventListener('keydown', dismiss)
     return () => {
       document.body.style.overflow = previousOverflow
       media.removeEventListener('change', close)
       window.removeEventListener('keydown', dismiss)
+      // The panel is about to hide; don't leave focus stranded inside it.
+      if (panelRef.current?.contains(document.activeElement)) {
+        document.getElementById('menu-toggle')?.focus({ preventScroll: true })
+      }
     }
   }, [menuOpen])
 
@@ -83,7 +93,7 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
           href="#home"
           className="brand"
           aria-label="Khaleel Azaizy, home"
-          onClick={() => setMenuOpen(false)}
+          onClick={closeMenu}
         >
           khaleel azaizy
         </a>
@@ -110,37 +120,84 @@ export function Navigation({ onContactClick }: { onContactClick: () => void }) {
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? <FiX /> : <FiMenu />}
+            {/* Two rules that turn into an X; the move is the feedback. */}
+            <span className="burger" aria-hidden="true">
+              <i />
+              <i />
+            </span>
           </button>
         </div>
       </header>
-      {menuOpen && (
+
+      {/* Always mounted so it can animate out as well as in. While closed it
+          is visibility: hidden, which also takes it out of the tab order and
+          the accessibility tree. */}
+      <div
+        id="mobile-menu"
+        className={`mobile-menu${menuOpen ? ' is-open' : ''}`}
+      >
+        <div className="menu-backdrop" onClick={closeMenu} />
         <nav
-          id="mobile-menu"
-          className="mobile-menu display"
+          ref={panelRef}
+          className="menu-panel"
           aria-label="Mobile navigation"
         >
-          {links.map((link) => (
+          {profile.available && (
+            <p className="menu-note label">
+              <span className="marks" aria-hidden="true" />
+              Open to full-time roles and freelance projects
+            </p>
+          )}
+          <ul className="menu-links display">
+            {links.map((link) => (
+              <li key={link.id}>
+                <a href={`#${link.id}`} onClick={closeMenu}>
+                  <span className="menu-line">
+                    {link.label}
+                    <FiArrowUpRight aria-hidden="true" />
+                  </span>
+                </a>
+              </li>
+            ))}
+            <li>
+              <button
+                onClick={() => {
+                  closeMenu()
+                  onContactClick()
+                }}
+              >
+                <span className="menu-line">
+                  Get in touch
+                  <FiArrowUpRight aria-hidden="true" />
+                </span>
+              </button>
+            </li>
+          </ul>
+          <div className="menu-footer">
             <a
-              key={link.id}
-              href={`#${link.id}`}
-              onClick={() => setMenuOpen(false)}
+              className="bracket"
+              href={profile.github}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {link.label}
-              <FiArrowUpRight aria-hidden="true" />
+              GitHub
+              <span className="sr-only">(opens in new tab)</span>
             </a>
-          ))}
-          <button
-            onClick={() => {
-              setMenuOpen(false)
-              onContactClick()
-            }}
-          >
-            Get in touch
-            <FiArrowUpRight aria-hidden="true" />
-          </button>
+            <a
+              className="bracket"
+              href={profile.linkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+              <span className="sr-only">(opens in new tab)</span>
+            </a>
+            <a className="bracket" href={`mailto:${profile.email}`}>
+              Email
+            </a>
+          </div>
         </nav>
-      )}
+      </div>
     </>
   )
 }
