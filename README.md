@@ -4,7 +4,7 @@
 
 **Software Engineer** · Full-Stack · AI · Data
 
-[![Live Site](https://img.shields.io/badge/🌐_Live-my--portfolio--c83e2.web.app-7654a3?style=for-the-badge)](https://my-portfolio-c83e2.web.app)
+[![Live Site](https://img.shields.io/badge/🌐_Live-khaleelazaizy.com-7654a3?style=for-the-badge)](https://khaleelazaizy.com)
 [![GitHub](https://img.shields.io/badge/GitHub-khaleel--azaizy-181717?style=for-the-badge&logo=github)](https://github.com/khaleel-azaizy)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-khaleel--azaizy-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/khaleel-azaizy)
 
@@ -116,7 +116,7 @@ npm run build
 npx firebase-tools deploy --only hosting
 ```
 
-> If the site moves to a custom domain, update the absolute URLs in `index.html`, `public/robots.txt`, and `public/sitemap.xml`.
+> The site is served at https://khaleelazaizy.com (and the Firebase default https://my-portfolio-c83e2.web.app). Absolute URLs in `index.html`, `public/robots.txt`, and `public/sitemap.xml` use the custom domain; change all three together if it moves.
 
 ## 🎨 Sections Overview
 
